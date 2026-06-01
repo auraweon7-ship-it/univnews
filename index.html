@@ -103,6 +103,8 @@
   .persp-conservative{background:#dc262630;color:#fca5a5;border:1px solid #dc262650;}
   .news-card .region-badge{font-size:0.58rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);}
   .news-card .date{font-size:0.73rem;color:var(--text-dim);white-space:nowrap;}
+  .news-card .importance{font-size:0.75rem;letter-spacing:-1px;margin-left:auto;white-space:nowrap;}
+  .star-on{color:#fbbf24;}.star-off{color:#2d3148;}
   .news-card .title{padding:0.3rem 1.1rem 0.4rem;font-size:0.93rem;font-weight:700;line-height:1.5;}
   .news-card .title a{color:inherit;text-decoration:none;}
   .news-card .title a:hover{color:var(--accent2);}
@@ -486,11 +488,53 @@ function findOg(link){
   return '';
 }
 
-let allNews = NEWS.map(n => {
+// 뉴스 중요도 (1~5): 정책 영향력, 사회적 파급력, 데이터 구체성, 전국적 관심도 기준
+const IMP = [
+  // 등록금 (5건)
+  5,4,4,3,4,
+  // 법인전입금 (4건)
+  4,4,5,4,
+  // 적립금 (3건)
+  3,4,4,
+  // 부채·재정위기 (3건)
+  5,4,3,
+  // 학생1인당 교육비 (4건)
+  4,5,5,4,
+  // 교육비환원율 (3건)
+  3,4,3,
+  // 장학금·교원확보 (2건)
+  3,4,
+  // 충원율 (3건)
+  4,4,5,
+  // 중도탈락률 (2건)
+  3,3,
+  // 취업률 (2건)
+  3,4,
+  // 외국인 유학생 (3건)
+  4,3,3,
+  // 이사회·수익용기본재산 (2건)
+  4,3,
+  // 감사·정보공시 (2건)
+  3,4,
+  // 교비횡령·비리 (2건)
+  5,5,
+  // 사립학교법 (3건)
+  4,5,4,
+  // 학령인구 대응 (3건)
+  4,5,4,
+  // 구조개혁·구조개선법 (4건)
+  5,4,5,4,
+  // 지역연계·생존전략 (3건)
+  4,4,3,
+  // AI·디지털 전환 (4건)
+  4,4,3,4,
+];
+
+let allNews = NEWS.map((n,i) => {
   const src = getSource(n.link);
   return {...n, title:clean(n.title), source:src, perspective:getPersp(src),
     region:n.r||'national', summary:summary(n.desc), dateObj:new Date(n.pubDate),
-    major:SUB_CATS[n.sub]?.major||'sustain', og:n.og||findOg(n.link)};
+    major:SUB_CATS[n.sub]?.major||'sustain', og:n.og||findOg(n.link), imp:IMP[i]||3};
 });
 
 let activeMajor='all', activeSub='all', activePersp='all', activeRegion='all';
@@ -606,6 +650,7 @@ function renderNews(f){
           <span class="persp-badge ${pCls}">${PERSP_LABELS[n.perspective]||''}</span>
           <span class="region-badge">${REGION_LABELS[n.region]||'전국'}</span>
         </div>
+        <span class="importance">${'<span class="star-on">★</span>'.repeat(n.imp||3)+'<span class="star-off">★</span>'.repeat(5-(n.imp||3))}</span>
         <span class="date">${d}</span>
       </div>
       <div class="title"><a href="${n.link}" target="_blank" rel="noopener">${n.title}</a></div>
