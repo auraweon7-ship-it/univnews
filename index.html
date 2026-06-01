@@ -80,9 +80,19 @@
   .stat-card .sv.sm{font-size:0.9rem;}
 
   /* News Grid */
-  .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:1rem;padding:1.2rem 2rem 3rem;}
-  .news-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.25s;display:flex;flex-direction:column;}
-  .news-card:hover{border-color:var(--accent);background:var(--card-hover);transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,92,231,0.15);}
+  .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:1rem;padding:1.2rem 2rem 1rem;}
+  .news-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.25s;display:flex;flex-direction:column;border-left:3px solid transparent;}
+  .news-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.3);}
+  .news-card.card-fiscal{background:linear-gradient(135deg,#1a1215 0%,#1a1d27 100%);border-left-color:#ef4444;}
+  .news-card.card-fiscal:hover{border-color:#ef4444;}
+  .news-card.card-invest{background:linear-gradient(135deg,#0f1a1d 0%,#1a1d27 100%);border-left-color:#06b6d4;}
+  .news-card.card-invest:hover{border-color:#06b6d4;}
+  .news-card.card-student{background:linear-gradient(135deg,#0f1a15 0%,#1a1d27 100%);border-left-color:#10b981;}
+  .news-card.card-student:hover{border-color:#10b981;}
+  .news-card.card-account{background:linear-gradient(135deg,#1a1810 0%,#1a1d27 100%);border-left-color:#f59e0b;}
+  .news-card.card-account:hover{border-color:#f59e0b;}
+  .news-card.card-sustain{background:linear-gradient(135deg,#15101a 0%,#1a1d27 100%);border-left-color:#8b5cf6;}
+  .news-card.card-sustain:hover{border-color:#8b5cf6;}
   .news-card .card-header{padding:0.9rem 1.1rem 0.25rem;display:flex;justify-content:space-between;align-items:flex-start;gap:0.4rem;}
   .news-card .badges{display:flex;gap:0.25rem;flex-wrap:wrap;}
   .news-card .major-badge{font-size:0.6rem;padding:0.12rem 0.45rem;border-radius:4px;font-weight:700;white-space:nowrap;}
@@ -119,6 +129,31 @@
 
   .empty-state{grid-column:1/-1;text-align:center;padding:3rem 2rem;color:var(--text-dim);}
   .empty-state .icon{font-size:2.5rem;margin-bottom:0.8rem;}
+
+  /* Charts Section */
+  .charts-section{padding:1rem 2rem 0.5rem;border-top:2px solid var(--border);}
+  .charts-title{font-size:1rem;font-weight:800;color:var(--accent2);margin-bottom:0.8rem;}
+  .charts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;min-height:260px;}
+  .chart-card h3{font-size:0.78rem;color:var(--text-dim);font-weight:700;margin-bottom:0.6rem;text-align:center;}
+  .chart-card canvas{width:100%!important;height:200px!important;}
+
+  /* Word Cloud */
+  .wordcloud-box{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0.3rem;min-height:200px;padding:0.5rem;}
+  .wc-word{display:inline-block;padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;cursor:default;transition:transform 0.15s;}
+  .wc-word:hover{transform:scale(1.15);}
+
+  /* AI Insight */
+  .ai-insight{margin:1rem 2rem;padding:1.2rem 1.5rem;background:linear-gradient(135deg,#1a1040,#0f1117);border:1px solid var(--accent);border-radius:12px;position:relative;}
+  .ai-insight::before{content:'AI';position:absolute;top:-10px;left:16px;background:var(--accent);color:#fff;font-size:0.65rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:4px;letter-spacing:0.1em;}
+  .ai-insight-title{font-size:0.9rem;font-weight:800;color:var(--accent2);margin-bottom:0.6rem;}
+  .ai-insight-body{font-size:0.82rem;color:var(--text);line-height:1.8;}
+  .ai-insight-loading{text-align:center;padding:2rem;color:var(--text-dim);font-size:0.85rem;}
+  .ai-insight-loading .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:0.5rem;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media(max-width:768px){.charts-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.charts-grid{grid-template-columns:1fr;}}
 
   /* Footer */
   .site-footer{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-top:1px solid var(--border);padding:2rem 2rem 1.5rem;margin-top:1rem;}
@@ -216,6 +251,26 @@
 <div class="sub-categories" id="subCategories"></div>
 <div class="stats-bar" id="statsBar"></div>
 <div class="news-grid" id="newsGrid"></div>
+
+<!-- Charts Section -->
+<div class="charts-section">
+  <div class="charts-title">📊 뉴스 분석 차트</div>
+  <div class="charts-grid">
+    <div class="chart-card"><h3>🔤 키워드 워드클라우드</h3><div id="wordcloud" class="wordcloud-box"></div></div>
+    <div class="chart-card"><h3>📁 대유형별 분포</h3><canvas id="chartMajor"></canvas></div>
+    <div class="chart-card"><h3>📰 언론사별 보도량</h3><canvas id="chartSource"></canvas></div>
+    <div class="chart-card"><h3>📅 월별 뉴스 추이</h3><canvas id="chartTimeline"></canvas></div>
+  </div>
+</div>
+
+<!-- AI Insight -->
+<div class="ai-insight" id="aiInsight">
+  <div class="ai-insight-title">🧠 AI 종합 분석 인사이트</div>
+  <div class="ai-insight-loading" id="aiLoading"><span class="spinner"></span>Claude AI 분석 중...</div>
+  <div class="ai-insight-body" id="aiBody" style="display:none;"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 
 <footer class="site-footer">
   <div class="footer-inner">
@@ -542,7 +597,7 @@ function renderNews(f){
     const sc=SUB_CATS[n.sub];
     const d=n.dateObj.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});
     const pCls=`persp-${n.perspective}`;
-    return `<div class="news-card">
+    return `<div class="news-card card-${n.major}">
       <div class="card-header">
         <div class="badges">
           <span class="major-badge ${mt?.cssClass||''}">${mt?.label||''}</span>
@@ -574,10 +629,106 @@ function renderNews(f){
   }).join('');
 }
 
-function render(){renderMajorTypes();renderSubCats();const f=getFiltered();renderStats(f);renderNews(f);}
+function render(){
+  renderMajorTypes();renderSubCats();
+  const f=getFiltered();
+  renderStats(f);renderNews(f);
+  renderCharts(f);
+}
 document.getElementById('sortBy').addEventListener('change',render);
 document.getElementById('searchInput').addEventListener('input',render);
+
+// ═══ Charts ═══
+let chartMajorInst, chartSourceInst, chartTimelineInst;
+const CHART_COLORS = ['#ef4444','#06b6d4','#10b981','#f59e0b','#8b5cf6'];
+const MAJOR_NAMES = ['재정 건전성','교육 투자','학생 경쟁력','법인 책무성','지속가능성'];
+const MAJOR_IDS = ['fiscal','invest','student','account','sustain'];
+
+function renderCharts(f){
+  renderWordCloud(f);
+  renderMajorChart(f);
+  renderSourceChart(f);
+  renderTimelineChart(f);
+}
+
+function renderWordCloud(f){
+  const box=document.getElementById('wordcloud');
+  const freq={};
+  f.forEach(n=>{
+    (n.kw||[]).forEach(k=>{freq[k]=(freq[k]||0)+1;});
+    n.title.replace(/[^가-힣a-zA-Z0-9]/g,' ').split(/\s+/).filter(w=>w.length>=2).forEach(w=>{freq[w]=(freq[w]||0)+1;});
+  });
+  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,40);
+  const max=sorted[0]?sorted[0][1]:1;
+  const colors=['#ef4444','#06b6d4','#10b981','#f59e0b','#8b5cf6','#ec4899','#6366f1','#14b8a6','#f97316','#a78bfa'];
+  box.innerHTML=sorted.map(([w,c],i)=>{
+    const size=0.65+((c/max)*1.4);
+    const color=colors[i%colors.length];
+    const opacity=0.5+(c/max)*0.5;
+    return `<span class="wc-word" style="font-size:${size}rem;color:${color};opacity:${opacity}">${w}</span>`;
+  }).join('');
+}
+
+function renderMajorChart(f){
+  const counts=MAJOR_IDS.map(id=>f.filter(n=>n.major===id).length);
+  const ctx=document.getElementById('chartMajor');
+  if(chartMajorInst)chartMajorInst.destroy();
+  chartMajorInst=new Chart(ctx,{type:'doughnut',data:{labels:MAJOR_NAMES,datasets:[{data:counts,backgroundColor:CHART_COLORS,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'#8b8fa3',font:{size:10},padding:8}}}}});
+}
+
+function renderSourceChart(f){
+  const sc={};f.forEach(n=>{sc[n.source]=(sc[n.source]||0)+1;});
+  const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const ctx=document.getElementById('chartSource');
+  if(chartSourceInst)chartSourceInst.destroy();
+  chartSourceInst=new Chart(ctx,{type:'bar',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),backgroundColor:'#6c5ce7',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{color:'#2d314820'}},y:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{display:false}}}}});
+}
+
+function renderTimelineChart(f){
+  const mc={};f.forEach(n=>{const m=n.pubDate.slice(0,7);mc[m]=(mc[m]||0)+1;});
+  const sorted=Object.entries(mc).sort((a,b)=>a[0].localeCompare(b[0]));
+  const ctx=document.getElementById('chartTimeline');
+  if(chartTimelineInst)chartTimelineInst.destroy();
+  chartTimelineInst=new Chart(ctx,{type:'line',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),borderColor:'#a29bfe',backgroundColor:'rgba(162,155,254,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#6c5ce7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{color:'#2d314820'}},y:{ticks:{color:'#8b8fa3',font:{size:9},stepSize:1},grid:{color:'#2d314820'}}}}});
+}
+
+// ═══ AI Insight via Claude API ═══
+async function fetchAIInsight(){
+  const titles=allNews.map(n=>n.title).join('; ');
+  const majorCounts={};allNews.forEach(n=>{const mt=MAJOR_TYPES.find(m=>m.id===n.major);majorCounts[mt?.label||n.major]=(majorCounts[mt?.label||n.major]||0)+1;});
+  const statsText=Object.entries(majorCounts).map(([k,v])=>`${k}: ${v}건`).join(', ');
+
+  const prompt=`당신은 한국 고등교육 정책 전문 분석가입니다. 아래는 최근 수집된 한국 사립대학교 관련 뉴스 ${allNews.length}건의 제목 목록과 대유형별 분포입니다.
+
+[대유형별 분포] ${statsText}
+
+[뉴스 제목 목록] ${titles}
+
+위 뉴스들을 종합 분석하여 다음을 포함한 400자 내외의 인사이트를 작성하세요:
+1. 현재 사립대학이 직면한 핵심 이슈 2~3가지
+2. 이슈 간 상호 연관성
+3. 향후 전망과 정책적 시사점
+
+한국어로 작성하고, 구체적 수치와 사례를 포함하세요.`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
+    });
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'분석 결과를 불러올 수 없습니다.';
+    document.getElementById('aiLoading').style.display='none';
+    document.getElementById('aiBody').style.display='block';
+    document.getElementById('aiBody').textContent=text;
+  }catch(e){
+    document.getElementById('aiLoading').innerHTML='⚠️ AI 분석 로드 실패: '+e.message;
+  }
+}
+
 render();
+setTimeout(fetchAIInsight,500);
 </script>
 </body>
 </html>
