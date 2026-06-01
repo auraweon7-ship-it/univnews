@@ -693,12 +693,27 @@ function renderTimelineChart(f){
 }
 
 // ═══ AI Insight via Claude API ═══
+function getApiKey(){
+  let key=localStorage.getItem('claude_api_key');
+  if(!key){
+    key=prompt('Claude API 키를 입력하세요 (AI 분석 기능 사용):');
+    if(key)localStorage.setItem('claude_api_key',key);
+  }
+  return key;
+}
+
 async function fetchAIInsight(){
+  const apiKey=getApiKey();
+  if(!apiKey){
+    document.getElementById('aiLoading').innerHTML='🔑 API 키가 없어 AI 분석을 건너뜁니다. 페이지 새로고침 후 키를 입력하세요.';
+    return;
+  }
+
   const titles=allNews.map(n=>n.title).join('; ');
   const majorCounts={};allNews.forEach(n=>{const mt=MAJOR_TYPES.find(m=>m.id===n.major);majorCounts[mt?.label||n.major]=(majorCounts[mt?.label||n.major]||0)+1;});
   const statsText=Object.entries(majorCounts).map(([k,v])=>`${k}: ${v}건`).join(', ');
 
-  const prompt=`당신은 한국 고등교육 정책 전문 분석가입니다. 아래는 최근 수집된 한국 사립대학교 관련 뉴스 ${allNews.length}건의 제목 목록과 대유형별 분포입니다.
+  const userPrompt=`당신은 한국 고등교육 정책 전문 분석가입니다. 아래는 최근 수집된 한국 사립대학교 관련 뉴스 ${allNews.length}건의 제목 목록과 대유형별 분포입니다.
 
 [대유형별 분포] ${statsText}
 
@@ -714,10 +729,14 @@ async function fetchAIInsight(){
   try{
     const res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':'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','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:prompt}]})
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:userPrompt}]})
     });
     const data=await res.json();
+    if(data.error){
+      if(data.error.type==='authentication_error'){localStorage.removeItem('claude_api_key');}
+      throw new Error(data.error.message);
+    }
     const text=data.content?.[0]?.text||'분석 결과를 불러올 수 없습니다.';
     document.getElementById('aiLoading').style.display='none';
     document.getElementById('aiBody').style.display='block';
