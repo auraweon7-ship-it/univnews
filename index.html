@@ -227,34 +227,34 @@
 
 <script>
 const MAJOR_TYPES = [
-  {id:'all',label:'전체',cssClass:''},
-  {id:'fiscal',label:'재정 건전성',cssClass:'mt-fiscal',subs:['tuition','fund_transfer','reserve','debt']},
-  {id:'invest',label:'교육 투자',cssClass:'mt-invest',subs:['edu_cost','edu_return','scholarship','faculty']},
-  {id:'student',label:'학생 경쟁력',cssClass:'mt-student',subs:['enrollment','dropout','employment','intl_student']},
-  {id:'account',label:'법인 책무성',cssClass:'mt-account',subs:['governance','audit','corruption','law']},
-  {id:'sustain',label:'지속가능성',cssClass:'mt-sustain',subs:['demography','reform','regional','ai_digital']},
+  {id:'all',label:'📋 전체',cssClass:''},
+  {id:'fiscal',label:'💰 재정 건전성',cssClass:'mt-fiscal',subs:['tuition','fund_transfer','reserve','debt']},
+  {id:'invest',label:'📚 교육 투자',cssClass:'mt-invest',subs:['edu_cost','edu_return','scholarship','faculty']},
+  {id:'student',label:'🎓 학생 경쟁력',cssClass:'mt-student',subs:['enrollment','dropout','employment','intl_student']},
+  {id:'account',label:'🏛️ 법인 책무성',cssClass:'mt-account',subs:['governance','audit','corruption','law']},
+  {id:'sustain',label:'🌱 지속가능성',cssClass:'mt-sustain',subs:['demography','reform','regional','ai_digital']},
 ];
 const SUB_CATS = {
-  tuition:{label:'등록금·등록금의존율',major:'fiscal'},
-  fund_transfer:{label:'법인전입금',major:'fiscal'},
-  reserve:{label:'적립금·이월금',major:'fiscal'},
-  debt:{label:'부채·재정위기',major:'fiscal'},
-  edu_cost:{label:'학생1인당 교육비',major:'invest'},
-  edu_return:{label:'교육비환원율',major:'invest'},
-  scholarship:{label:'장학금',major:'invest'},
-  faculty:{label:'교원확보율',major:'invest'},
-  enrollment:{label:'충원율',major:'student'},
-  dropout:{label:'중도탈락률',major:'student'},
-  employment:{label:'취업률',major:'student'},
-  intl_student:{label:'외국인 유학생',major:'student'},
-  governance:{label:'이사회·수익용기본재산',major:'account'},
-  audit:{label:'감사·정보공시',major:'account'},
-  corruption:{label:'교비횡령·비리',major:'account'},
-  law:{label:'사립학교법',major:'account'},
-  demography:{label:'학령인구 대응',major:'sustain'},
-  reform:{label:'구조개혁·구조개선법',major:'sustain'},
-  regional:{label:'지역연계·생존전략',major:'sustain'},
-  ai_digital:{label:'AI·디지털 전환',major:'sustain'},
+  tuition:{label:'💳 등록금·등록금의존율',major:'fiscal'},
+  fund_transfer:{label:'🏦 법인전입금',major:'fiscal'},
+  reserve:{label:'🏧 적립금·이월금',major:'fiscal'},
+  debt:{label:'📉 부채·재정위기',major:'fiscal'},
+  edu_cost:{label:'💡 학생1인당 교육비',major:'invest'},
+  edu_return:{label:'📊 교육비환원율',major:'invest'},
+  scholarship:{label:'🎁 장학금',major:'invest'},
+  faculty:{label:'👨‍🏫 교원확보율',major:'invest'},
+  enrollment:{label:'📈 충원율',major:'student'},
+  dropout:{label:'🚪 중도탈락률',major:'student'},
+  employment:{label:'💼 취업률',major:'student'},
+  intl_student:{label:'🌍 외국인 유학생',major:'student'},
+  governance:{label:'⚖️ 이사회·수익용기본재산',major:'account'},
+  audit:{label:'🔍 감사·정보공시',major:'account'},
+  corruption:{label:'🚨 교비횡령·비리',major:'account'},
+  law:{label:'📜 사립학교법',major:'account'},
+  demography:{label:'👶 학령인구 대응',major:'sustain'},
+  reform:{label:'🔧 구조개혁·구조개선법',major:'sustain'},
+  regional:{label:'🗺️ 지역연계·생존전략',major:'sustain'},
+  ai_digital:{label:'🤖 AI·디지털 전환',major:'sustain'},
 };
 
 const PERSP_LABELS = {progressive:'진보',moderate:'중도',conservative:'보수'};
@@ -280,104 +280,104 @@ function getPersp(src){
   for(const[p,list] of Object.entries(SRC_PERSP)) if(list.includes(src)) return p;
   return 'moderate';
 }
-function summary(d,n=100){let c=clean(d).replace(/\s+/g,' ').trim();return c.length>n?c.slice(0,n)+'...':c;}
+function summary(d,n=150){let c=clean(d).replace(/\s+/g,' ').trim();return c.length>n?c.slice(0,n)+'...':c;}
 
 // p=perspective, r=region
 const NEWS = [
-  // ═══ 재정 건전성: 등록금 ═══
-  {sub:'tuition',title:'올해 130개 대학 등록금 인상… 의대생 1000만 원 넘어',link:'https://news.cpbc.co.kr/article/1172534?division=NAVER',desc:'2026학년도 4년제 192개 대학 중 130개 등록금 인상. 평균 727만원으로 전년 대비 2.1% 상승. 사립 823만1500원.',pubDate:'2026-04-29',kw:['등록금','인상','사립대'],r:'national'},
-  {sub:'tuition',title:'사립대 등록금 인상의 부메랑 - 교육물가 15년 만에 최대',link:'https://n.news.naver.com/mnews/article/665/0000007003?sid=101',desc:'2025년 사립대 평균 인상률 4.9%, 국·공립대 0.7%로 사립대 등록금 인상이 교육물가 상승의 뇌관 역할.',pubDate:'2026-03-17',kw:['등록금','인상','교육물가'],r:'national'},
-  {sub:'tuition',title:'대학 등록금 인상에 교육물가 15년 만에 최대폭 상승',link:'https://n.news.naver.com/mnews/article/022/0004113236?sid=101',desc:'반값등록금 동참하던 대학들이 인상 전환. 2026년 66% 대학이 인상 예고. 교육물가 2.3% 기록.',pubDate:'2026-03-16',kw:['등록금','인상','동결'],r:'national'},
-  {sub:'tuition',title:'사립대 "줄인상" 국립대 "동결"… 등록금 쌍곡선',link:'http://www.gjdream.com/news/articleView.html?idxno=667293',desc:'국립대학 동결 유지, 사립대학 줄줄이 인상 대열 합류. 조선대 2026학년도 등록금 인상 확정.',pubDate:'2026-02-23',kw:['등록금','인상','동결'],r:'honam'},
-  {sub:'tuition',title:'등록금 올려도 물가 영향 없다? 대학총장 대표의 오류는',link:'https://n.news.naver.com/mnews/article/079/0004123156?sid=102',desc:'2025년 사립대학교 납입금 전년대비 5.2% 상승. 급격한 등록금 인상은 물가를 밀어올리는 뇌관.',pubDate:'2026-03-10',kw:['등록금','인상','물가'],r:'national'},
+  // ═══ 💰 재정 건전성: 등록금 ═══
+  {sub:'tuition',title:'💳 올해 130개 대학 등록금 인상… 의대생 1000만 원 넘어',link:'https://news.cpbc.co.kr/article/1172534?division=NAVER',desc:'2026학년도 4년제 192개 대학 중 130개가 등록금을 인상했다. 평균 등록금은 연간 727만원으로 전년 대비 2.1% 상승했으며, 사립대는 823만1500원을 기록. 의대생 등록금은 2년 연속 1000만원을 넘겼다.',pubDate:'2026-04-29',kw:['등록금','인상','사립대'],r:'national'},
+  {sub:'tuition',title:'📈 사립대 등록금 인상의 부메랑 - 교육물가 15년 만에 최대',link:'https://n.news.naver.com/mnews/article/665/0000007003?sid=101',desc:'2025년 사립대 평균 등록금 인상률 4.9%, 국·공립대 0.7%로 큰 격차를 보였다. 사립대 중심의 등록금 인상이 교육물가 상승의 뇌관이 되면서 소비자물가에도 직접적 영향을 미치고 있다.',pubDate:'2026-03-17',kw:['등록금','인상','교육물가'],r:'national'},
+  {sub:'tuition',title:'💸 대학 등록금 인상에 교육물가 15년 만에 최대폭 상승',link:'https://n.news.naver.com/mnews/article/022/0004113236?sid=101',desc:'반값등록금에 동참하던 대학들이 인상으로 전환하면서 교육물가가 2.3%를 기록했다. 2026년에도 전체 대학의 66%가 인상을 예고하고 있어 상승세가 이어질 전망이다.',pubDate:'2026-03-16',kw:['등록금','인상','동결'],r:'national'},
+  {sub:'tuition',title:'⬆️ 사립대 "줄인상" 국립대 "동결"… 등록금 쌍곡선',link:'http://www.gjdream.com/news/articleView.html?idxno=667293',desc:'국립대학들이 등록금 동결을 유지한 반면, 사립대학들은 장기 동결에 따른 재정 부담을 이유로 줄줄이 인상 대열에 합류하고 있다. 조선대도 2026학년도 등록금 인상을 확정했다.',pubDate:'2026-02-23',kw:['등록금','인상','동결'],r:'honam'},
+  {sub:'tuition',title:'🤔 등록금 올려도 물가 영향 없다? 대학총장 대표의 오류는',link:'https://n.news.naver.com/mnews/article/079/0004123156?sid=102',desc:'2025년 사립대학교 납입금이 전년대비 5.2% 상승했다. 급격한 등록금 인상은 소비자물가 전체를 밀어올리는 뇌관 역할을 했으며, 총장 대표의 "물가에 영향 없다" 주장은 통계와 배치된다.',pubDate:'2026-03-10',kw:['등록금','인상','물가'],r:'national'},
 
-  // ═══ 재정 건전성: 법인전입금 ═══
-  {sub:'fund_transfer',title:'대학평가 8위 세종대, 법인은 37위… 재정 지원 부실',link:'https://n.news.naver.com/mnews/article/015/0005195994?sid=102',desc:'광운대 법인전입금 비율 0.18%, 법정부담금 6.5%. 법인 재정 기여 없어 등록금의존율 60.89%.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','재정건전성'],r:'capital'},
-  {sub:'fund_transfer',title:'병원 수익 탄탄한 일송학원… 등록금의존율 26%에 불과',link:'https://n.news.naver.com/mnews/article/015/0005195987?sid=102',desc:'한림대 법인전입금 덕분에 등록금의존율 26.64%. 가톨릭대도 법인전입금 비율 우수.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','한림대'],r:'capital'},
-  {sub:'fund_transfer',title:'재정·이사회 분석… 83개 대학법인 체질 진단',link:'https://n.news.naver.com/mnews/article/015/0005195976?sid=102',desc:'사립대 비중 80%. 법인전입금 비율 높을수록 등록금의존율 낮아짐. 법인-대학 재정건전성 종합 평가.',pubDate:'2025-10-13',kw:['법인전입금','재정건전성','대학법인'],r:'national'},
-  {sub:'fund_transfer',title:'서울여대 법인전입금 0.4%… 대학평균 7.4% 대비 극히 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 등록금의존율 54.3%로 평균 47.7% 초과. 법인전입금·수익용기본재산 확보율 모두 평균 미달.',pubDate:'2026-04-30',kw:['법인전입금','등록금의존율','서울여대'],r:'capital'},
+  // ═══ 💰 재정 건전성: 법인전입금 ═══
+  {sub:'fund_transfer',title:'🏢 대학평가 8위 세종대, 법인은 37위… 재정 지원 부실',link:'https://n.news.naver.com/mnews/article/015/0005195994?sid=102',desc:'광운대 법인전입금 비율은 0.18%에 불과하고 법정부담금도 6.5%에 그쳤다. 법인의 재정 기여가 사실상 없어 등록금의존율이 60.89%에 달하며, 학생 부담이 가중되고 있다.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','재정건전성'],r:'capital'},
+  {sub:'fund_transfer',title:'🏥 병원 수익 탄탄한 일송학원… 등록금의존율 26%에 불과',link:'https://n.news.naver.com/mnews/article/015/0005195987?sid=102',desc:'한림대는 부속병원 수익 기반의 높은 법인전입금 덕분에 등록금의존율이 26.64%에 불과하다. 가톨릭대도 법인전입금 비율이 우수해 재정건전성이 양호한 대학으로 꼽혔다.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','한림대'],r:'capital'},
+  {sub:'fund_transfer',title:'🔬 재정·이사회 분석… 83개 대학법인 체질 진단',link:'https://n.news.naver.com/mnews/article/015/0005195976?sid=102',desc:'한국의 사립대 비중은 80%에 달한다. 법인전입금 비율이 높을수록 등록금의존율은 낮아지는 구조가 확인되었으며, 법인-대학 재정건전성을 종합 평가하는 최초 대규모 진단 결과가 공개됐다.',pubDate:'2025-10-13',kw:['법인전입금','재정건전성','대학법인'],r:'national'},
+  {sub:'fund_transfer',title:'📉 서울여대 법인전입금 0.4%… 대학평균 7.4% 대비 극히 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 등록금의존율은 54.3%로 사립대 평균 47.7%를 크게 초과했다. 법인전입금 비율과 수익용기본재산 확보율 모두 대학 평균에 미달하며 법인 책무성이 미흡한 것으로 나타났다.',pubDate:'2026-04-30',kw:['법인전입금','등록금의존율','서울여대'],r:'capital'},
 
-  // ═══ 재정 건전성: 적립금·이월금 ═══
-  {sub:'reserve',title:'사립 4년제 대학 적립금 증권투자, 2022년 이후 급증',link:'https://news.unn.net/news/articleView.html?idxno=592621',desc:'2007년 사립학교법 개정으로 적립금 1/2 한도 내 증권 취득 허용. 2022년 이후 증권투자 급증 추세.',pubDate:'2026-05-18',kw:['적립금','증권투자','사립학교법'],r:'national'},
-  {sub:'reserve',title:'한국사학진흥재단, 학생들 앞에 "대학 살림표" 펼쳤다',link:'https://www.dkilbo.com/news/articleView.html?idxno=545280',desc:'사립대 적립금 11조 원이나 법정 5가지 용도로 묶여 있어 자유롭게 쓸 수 있는 돈은 제한적.',pubDate:'2026-05-27',kw:['적립금','재정','사립대'],r:'yeongnam'},
-  {sub:'reserve',title:'"내 등록금 어디로" 한국사학진흥재단 타운홀미팅',link:'https://www.job-post.co.kr/news/articleView.html?idxno=216955',desc:'11조 원 사립대 적립금은 사립학교법상 5가지 용도로 묶여 있어 등록금 인하 재원 전용 불가.',pubDate:'2026-05-28',kw:['적립금','등록금','사립학교법'],r:'yeongnam'},
+  // ═══ 💰 재정 건전성: 적립금·이월금 ═══
+  {sub:'reserve',title:'📊 사립 4년제 대학 적립금 증권투자, 2022년 이후 급증',link:'https://news.unn.net/news/articleView.html?idxno=592621',desc:'2007년 사립학교법 개정으로 적립금의 1/2 한도 내 증권 취득이 허용된 이후, 2022년부터 대학들의 증권투자가 급증하고 있다. 운용 수익 확대를 위한 적극적 자산운용 전략이 확산되는 추세다.',pubDate:'2026-05-18',kw:['적립금','증권투자','사립학교법'],r:'national'},
+  {sub:'reserve',title:'💰 한국사학진흥재단, 학생들 앞에 "대학 살림표" 펼쳤다',link:'https://www.dkilbo.com/news/articleView.html?idxno=545280',desc:'사립대 적립금 총 11조 원 규모이나, 사립학교법상 지정된 5가지 용도로만 사용 가능해 자유롭게 쓸 수 있는 돈은 제한적이다. 과잉 적립을 막기 위한 제도 개선이 필요하다는 목소리가 높다.',pubDate:'2026-05-27',kw:['적립금','재정','사립대'],r:'yeongnam'},
+  {sub:'reserve',title:'🎓 "내 등록금 어디로" 한국사학진흥재단 타운홀미팅',link:'https://www.job-post.co.kr/news/articleView.html?idxno=216955',desc:'사립대 적립금 11조 원은 사립학교법상 5가지 법정 용도로 묶여 있어 등록금 인하 재원으로 전용할 수 없는 구조다. 학생들에게 대학 재정 정보를 투명하게 설명하는 타운홀미팅이 열렸다.',pubDate:'2026-05-28',kw:['적립금','등록금','사립학교법'],r:'yeongnam'},
 
-  // ═══ 재정 건전성: 부채·재정위기 ═══
-  {sub:'debt',title:'연세대 부채 1274억 원인데 부채비율 6.8%… 사립대 재정 분석',link:'https://news.unn.net/news/articleView.html?idxno=592522',desc:'부채가 기본금의 절반에 육박. 등록금 수입 추가 감소 시 자본잠식 가능성도 배제할 수 없다.',pubDate:'2026-05-14',kw:['부채','재정위기','연세대'],r:'capital'},
-  {sub:'debt',title:'사립대의 채용 비리 "사학감독원"으로 차단해야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=852322',desc:'학령인구 감소와 지역대학 위기 속 국가는 사립대에 막대한 재정 투입. 재원 사용 감독 필요.',pubDate:'2026-05-31',kw:['재정위기','사학감독','사립대'],r:'chungcheong'},
-  {sub:'debt',title:'한국대학홍보협의회 "2026년 춘계세미나" 개최',link:'https://news.unn.net/news/articleView.html?idxno=592896',desc:'학령인구 감소와 대학의 재정 위기 속 대학 홍보인들의 전문성·신뢰 기반 대응 전략 논의.',pubDate:'2026-05-27',kw:['재정위기','학령인구','사립대'],r:'national'},
+  // ═══ 💰 재정 건전성: 부채·재정위기 ═══
+  {sub:'debt',title:'🏦 연세대 부채 1274억 원인데 부채비율 6.8%… 사립대 재정 분석',link:'https://news.unn.net/news/articleView.html?idxno=592522',desc:'연세대 부채가 기본금의 절반에 육박하고 있으나 부채비율은 6.8%에 그친다. 등록금 수입이 추가 감소하면 자본잠식 가능성도 배제할 수 없어 사립대 재정 구조의 취약성이 드러났다.',pubDate:'2026-05-14',kw:['부채','재정위기','연세대'],r:'capital'},
+  {sub:'debt',title:'🚨 사립대의 채용 비리 "사학감독원"으로 차단해야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=852322',desc:'학령인구 감소와 지역대학 위기 속에서 국가는 사립대에 막대한 재정을 투입하고 있지만, 재원이 제대로 사용되는지 감독하는 독립 기관이 부재하다. 사학감독원 설립 필요성이 제기됐다.',pubDate:'2026-05-31',kw:['재정위기','사학감독','사립대'],r:'chungcheong'},
+  {sub:'debt',title:'📢 한국대학홍보협의회 "2026년 춘계세미나" 개최',link:'https://news.unn.net/news/articleView.html?idxno=592896',desc:'학령인구 감소와 대학 재정 위기가 동시에 진행되는 가운데, 4년제 대학 홍보인들이 전문성과 기관장 신뢰를 바탕으로 위기 대응 전략을 논의했다. 사립대 76개교가 참여했다.',pubDate:'2026-05-27',kw:['재정위기','학령인구','사립대'],r:'national'},
 
-  // ═══ 교육 투자: 학생1인당 교육비 ═══
-  {sub:'edu_cost',title:'"서울대 10개" 실효성 높이려면… 선택과 집중 구조개혁 병행 필요',link:'https://news.unn.net/news/articleView.html?idxno=592880',desc:'재정지원 확대에도 학생 1인당 교육비와 연구 성과에서 사립대학·국립대학 법인 간 격차 지속.',pubDate:'2026-05-27',kw:['교육비','1인당','격차'],r:'national'},
-  {sub:'edu_cost',title:'"서울대 10개" 국립대 지원에 사립대 "역차별" 집단 반발',link:'https://n.news.naver.com/mnews/article/421/0008910297?sid=102',desc:'사립대 재정 제약 속 국립대 대규모 재정 투입으로 교육비 격차 확대 우려. 우수 학생 유치 경쟁력 약화.',pubDate:'2026-04-24',kw:['교육비','격차','사립대'],r:'national'},
-  {sub:'edu_cost',title:'거점국립대 3곳에 1000억씩 투자',link:'https://n.news.naver.com/mnews/article/662/0000093123?sid=102',desc:'거점국립대 학생 1인당 교육비를 서울대의 70%(2030년 약 4400만원)로 높이는 계획.',pubDate:'2026-04-16',kw:['교육비','1인당','거점국립대'],r:'national'},
-  {sub:'edu_cost',title:'수도권 국공립대 교육비, 지방보다 262.7%p 높아',link:'https://news.unn.net/news/articleView.html?idxno=590668',desc:'국공립대 학생 1인당 교육비가 평균 등록금의 6.6배. 수도권과 지방 간 극심한 격차.',pubDate:'2026-03-11',kw:['교육비','1인당','격차'],r:'national'},
+  // ═══ 📚 교육 투자: 학생1인당 교육비 ═══
+  {sub:'edu_cost',title:'🎯 "서울대 10개" 실효성 높이려면… 선택과 집중 구조개혁 병행 필요',link:'https://news.unn.net/news/articleView.html?idxno=592880',desc:'재정지원이 확대됐지만 수도권 주요 사립대학 및 국립대학 법인과 비교할 때 학생 1인당 교육비와 연구 성과 등에서 격차가 여전히 지속되고 있어 선택과 집중 방식의 구조개혁이 필요하다.',pubDate:'2026-05-27',kw:['교육비','1인당','격차'],r:'national'},
+  {sub:'edu_cost',title:'😤 "서울대 10개" 국립대 지원에 사립대 "역차별" 집단 반발',link:'https://n.news.naver.com/mnews/article/421/0008910297?sid=102',desc:'사립대가 등록금 규제로 재정 제약을 받는 상황에서 국립대에만 대규모 재정이 투입되면서 교육비 격차가 확대되고 있다. 사립대 측은 우수 학생 유치 경쟁력 약화를 우려하며 집단 반발에 나섰다.',pubDate:'2026-04-24',kw:['교육비','격차','사립대'],r:'national'},
+  {sub:'edu_cost',title:'💵 거점국립대 3곳에 1000억씩 투자',link:'https://n.news.naver.com/mnews/article/662/0000093123?sid=102',desc:'거점국립대학 학생 1인당 교육비를 서울대의 70% 수준인 2030년 기준 약 4400만원으로 높이는 계획이 발표됐다. 수도권과 비수도권 대학 간 격차 해소가 핵심 목표다.',pubDate:'2026-04-16',kw:['교육비','1인당','거점국립대'],r:'national'},
+  {sub:'edu_cost',title:'⚖️ 수도권 국공립대 교육비, 지방보다 262.7%p 높아',link:'https://news.unn.net/news/articleView.html?idxno=590668',desc:'국공립대 학생 1인당 교육비가 평균 등록금의 6.6배에 달하는 것으로 나타났다. 수도권과 지방 간 교육비 격차가 등록금 차이보다 훨씬 극심하며, 실질적 교육 불평등을 야기하고 있다.',pubDate:'2026-03-11',kw:['교육비','1인당','격차'],r:'national'},
 
-  // ═══ 교육 투자: 교육비환원율 ═══
-  {sub:'edu_return',title:'서울여대 교육비환원율 187.3%… 대학평균 271.1% 대비 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 교육비환원율 187.3%로 사립대 평균 271.1%에 못 미침. 장학금 지급도 평균 이하.',pubDate:'2026-04-30',kw:['교육비환원율','장학금','서울여대'],r:'capital'},
-  {sub:'edu_return',title:'가톨릭대 교육비환원율 352.2%… 사립대 평균 상회',link:'https://www.businesspost.co.kr/BP?command=article_view&num=427194',desc:'가톨릭대 교육비환원율 352.2%로 사립대 평균 상회. 등록금의존율 34.8%로 양호.',pubDate:'2026-01-19',kw:['교육비환원율','가톨릭대','등록금의존율'],r:'capital'},
-  {sub:'edu_return',title:'교수들이 "AI 대학진단 플랫폼" 만들었다',link:'http://www.kyosu.net/news/articleView.html?idxno=153223',desc:'교육비환원율·부채비율 등 재정 지속가능성 지표와 전임교원확보율·취업률·장학금 등 교육투자 지표 통합 분석.',pubDate:'2025-12-24',kw:['교육비환원율','AI','대학진단'],r:'national'},
+  // ═══ 📚 교육 투자: 교육비환원율 ═══
+  {sub:'edu_return',title:'📉 서울여대 교육비환원율 187.3%… 대학평균 271.1% 대비 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 교육비환원율은 187.3%로 사립대 평균 271.1%에 크게 못 미쳤다. 장학금 지급률도 대학 평균 이하로, 학생에게 돌아가는 교육투자가 부족한 것으로 평가된다.',pubDate:'2026-04-30',kw:['교육비환원율','장학금','서울여대'],r:'capital'},
+  {sub:'edu_return',title:'✅ 가톨릭대 교육비환원율 352.2%… 사립대 평균 상회',link:'https://www.businesspost.co.kr/BP?command=article_view&num=427194',desc:'가톨릭대 교육비환원율은 352.2%로 사립대 평균 271.1%를 크게 상회했다. 등록금의존율도 34.8%로 평균 47.7%보다 낮아, 법인의 재정 기여가 학생 교육 투자로 이어지는 모범 사례로 꼽힌다.',pubDate:'2026-01-19',kw:['교육비환원율','가톨릭대','등록금의존율'],r:'capital'},
+  {sub:'edu_return',title:'🤖 교수들이 "AI 대학진단 플랫폼" 만들었다',link:'http://www.kyosu.net/news/articleView.html?idxno=153223',desc:'교육비환원율·부채비율 등 재정 지속가능성 지표와 전임교원확보율·취업률·장학금 등 교육투자 지표를 AI로 통합 분석하는 대학진단 플랫폼이 교수진에 의해 개발되었다.',pubDate:'2025-12-24',kw:['교육비환원율','AI','대학진단'],r:'national'},
 
-  // ═══ 교육 투자: 장학금·교원확보 ═══
-  {sub:'scholarship',title:'상명대 장학금 지원율 47.9%… 사립대 평균 53.5% 미달',link:'https://www.businesspost.co.kr/BP?command=article_view&num=428091',desc:'상명대 교육비환원율 190.4%로 격차. 총 장학금 지원율 사립대 평균에 미달.',pubDate:'2026-01-27',kw:['장학금','교육비환원율','상명대'],r:'capital'},
-  {sub:'faculty',title:'게으른 교수를 거르는 것도 개혁이다',link:'https://n.news.naver.com/mnews/article/469/0000931963?sid=110',desc:'재정투자 확대와 교원 인사제도·보상체계 개선 필요. 수도권 주요 사립대 수준으로 심사기준 강화.',pubDate:'2026-05-21',kw:['교원확보','교수','심사기준'],r:'national'},
+  // ═══ 📚 교육 투자: 장학금·교원확보 ═══
+  {sub:'scholarship',title:'🎁 상명대 장학금 지원율 47.9%… 사립대 평균 53.5% 미달',link:'https://www.businesspost.co.kr/BP?command=article_view&num=428091',desc:'상명대 교육비환원율은 190.4%로 대학 평균과 격차가 있으며, 총 장학금 지원율도 47.9%로 사립대 평균 53.5%에 미달한다. 기숙사 수용률도 8.9%에 그쳐 교육환경 전반이 열악하다.',pubDate:'2026-01-27',kw:['장학금','교육비환원율','상명대'],r:'capital'},
+  {sub:'faculty',title:'👨‍🏫 게으른 교수를 거르는 것도 개혁이다',link:'https://n.news.naver.com/mnews/article/469/0000931963?sid=110',desc:'대학 교육의 질을 높이려면 재정투자 확대뿐 아니라 교원 인사제도와 보상체계를 근본적으로 개선해야 한다. 수도권 주요 사립대 수준으로 심사기준을 강화하는 방안이 논의 중이다.',pubDate:'2026-05-21',kw:['교원확보','교수','심사기준'],r:'national'},
 
-  // ═══ 학생 경쟁력: 충원율 ═══
-  {sub:'enrollment',title:'나주대 신입생 충원율 97.4%… 지방대 위기 정면 돌파',link:'https://n.news.naver.com/mnews/article/081/0003623719?sid=102',desc:'전국 지방대학 미달 사태 속 나주대 충원율 97.4% 달성. 학과 구조 개편과 유학생 유치 성과.',pubDate:'2026-03-07',kw:['충원율','지방대','나주대'],r:'honam'},
-  {sub:'enrollment',title:'광주·전남 사립대 신입생 등록률 100% 육박',link:'http://www.kjdaily.com/article.php?aid=1772619431674254033',desc:'지역 발전과 연계한 교육사업, 외국인 유학생 유치 등 다양한 노력으로 높은 충원율.',pubDate:'2026-03-04',kw:['충원율','신입생','사립대'],r:'honam'},
-  {sub:'enrollment',title:'영남이공대, 4년 연속 신입생 100% 충원 달성',link:'https://www.kbmaeil.com/article/20260302500438',desc:'산업 수요 반영 학과 개편, 성인학습자·외국인 유학생 유치 확대로 100% 충원.',pubDate:'2026-03-02',kw:['충원율','100%','영남이공대'],r:'yeongnam'},
+  // ═══ 🎓 학생 경쟁력: 충원율 ═══
+  {sub:'enrollment',title:'📈 나주대 신입생 충원율 97.4%… 지방대 위기 정면 돌파',link:'https://n.news.naver.com/mnews/article/081/0003623719?sid=102',desc:'전국 지방대학 미달 사태가 속출하는 가운데 나주대가 충원율 97.4%를 달성했다. 학과 구조 개편과 외국인 유학생 유치 확대, 지역 산업 연계 교육 모델이 맞물린 결과로 분석된다.',pubDate:'2026-03-07',kw:['충원율','지방대','나주대'],r:'honam'},
+  {sub:'enrollment',title:'🎉 광주·전남 사립대 신입생 등록률 100% 육박',link:'http://www.kjdaily.com/article.php?aid=1772619431674254033',desc:'광주·전남 지역 사립대들이 지역 발전과 연계한 교육사업, 외국인 유학생 유치 등 다양한 노력으로 신입생 등록률 100%에 육박하는 성과를 거뒀다. 지방대 위기 극복의 가능성을 보여준다.',pubDate:'2026-03-04',kw:['충원율','신입생','사립대'],r:'honam'},
+  {sub:'enrollment',title:'🏆 영남이공대, 4년 연속 신입생 100% 충원 달성',link:'https://www.kbmaeil.com/article/20260302500438',desc:'영남이공대가 산업 수요를 반영한 학과 개편과 신설, 성인학습자 및 외국인 유학생 유치 확대를 통해 4년 연속 신입생 100% 충원을 완료했다. 교육과 취업을 유기적으로 연결한 구조 혁신의 성과다.',pubDate:'2026-03-02',kw:['충원율','100%','영남이공대'],r:'yeongnam'},
 
-  // ═══ 학생 경쟁력: 중도탈락률 ═══
-  {sub:'dropout',title:'안양대 총장 "AI 시대 교육 체계 혁신적 변화 추구"',link:'https://news.unn.net/news/articleView.html?idxno=581552',desc:'학과 취업률·중도탈락률·충원율 면밀 분석으로 대학 구조조정 추진. 2026년 취업률 72% 목표.',pubDate:'2025-07-22',kw:['중도탈락률','취업률','충원율'],r:'capital'},
-  {sub:'dropout',title:'경상국립대 - 중도탈락률 감소와 충원율 향상 추진',link:'http://www.gndomin.com/news/articleView.html?idxno=438594',desc:'AI 기반 연구·행정지원 시스템 도입과 중도탈락률 감소, 충원율 향상 제도적 대응.',pubDate:'2025-06-22',kw:['중도탈락률','충원율','AI'],r:'yeongnam'},
+  // ═══ 🎓 학생 경쟁력: 중도탈락률 ═══
+  {sub:'dropout',title:'🚪 안양대 총장 "AI 시대 교육 체계 혁신적 변화 추구"',link:'https://news.unn.net/news/articleView.html?idxno=581552',desc:'안양대 총장이 학과별 취업률·중도탈락률·충원율을 면밀히 분석해 대학 구조조정을 추진하고 있다. 2025년 목표 취업률 70%, 2026년 72% 달성을 위해 교육 체계를 혁신적으로 변화시키겠다고 밝혔다.',pubDate:'2025-07-22',kw:['중도탈락률','취업률','충원율'],r:'capital'},
+  {sub:'dropout',title:'📉 경상국립대 - 중도탈락률 감소와 충원율 향상 추진',link:'http://www.gndomin.com/news/articleView.html?idxno=438594',desc:'경상국립대가 AI 기반 연구·행정지원 시스템을 도입하고, 중도탈락률 감소와 충원율 향상을 위한 제도적 대응에 나섰다. 캠퍼스별 특성화 계획도 함께 추진 중이다.',pubDate:'2025-06-22',kw:['중도탈락률','충원율','AI'],r:'yeongnam'},
 
-  // ═══ 학생 경쟁력: 취업률 ═══
-  {sub:'employment',title:'전문대학, 낮은 교육비 여건 속 취업률 72.1% 기록',link:'https://edu.donga.com/news/articleView.html?idxno=107928',desc:'대학정보공시 분석 전문대학 취업률 현황. 지속적 재정지원 필요.',pubDate:'2026-05-22',kw:['취업률','전문대학','교육비'],r:'national'},
-  {sub:'employment',title:'아주대 취업률 69.3%… 졸업생 2000명 이상 대학 중 4위',link:'https://n.news.naver.com/mnews/article/015/0005289778?sid=102',desc:'대학정보공시 기준 취업률 69.3% 전국 4위. 현장 중심 교육이 사회 진출로 연결.',pubDate:'2026-05-21',kw:['취업률','아주대','정보공시'],r:'capital'},
+  // ═══ 🎓 학생 경쟁력: 취업률 ═══
+  {sub:'employment',title:'💼 전문대학, 낮은 교육비 여건 속 취업률 72.1% 기록',link:'https://edu.donga.com/news/articleView.html?idxno=107928',desc:'교육부의 2025년 대학정보공시 분석 결과, 전문대학이 낮은 학생 1인당 교육비 여건에도 불구하고 취업률 72.1%를 기록했다. 지속적인 재정지원이 필요하다는 목소리가 높아지고 있다.',pubDate:'2026-05-22',kw:['취업률','전문대학','교육비'],r:'national'},
+  {sub:'employment',title:'🥇 아주대 취업률 69.3%… 졸업생 2000명 이상 대학 중 4위',link:'https://n.news.naver.com/mnews/article/015/0005289778?sid=102',desc:'아주대가 대학정보공시 기준 취업률 69.3%로 졸업생 2000명 이상 대학 중 전국 4위를 기록했다. 현장 중심 교육이 실제 사회 진출로 연결되고 있음을 보여주는 지표로 평가된다.',pubDate:'2026-05-21',kw:['취업률','아주대','정보공시'],r:'capital'},
 
-  // ═══ 학생 경쟁력: 외국인 유학생 ═══
-  {sub:'intl_student',title:'위기의 지방대, 유학생 유치로 활기',link:'https://n.news.naver.com/mnews/article/001/0016051655?sid=102',desc:'학령인구 감소와 수도권 쏠림으로 지방대 위기 심화. 외국인 유학생 유치가 생존전략.',pubDate:'2026-04-30',kw:['유학생','지방대','생존전략'],r:'national'},
-  {sub:'intl_student',title:'학령인구 절벽탓… 지역대학, 유학생 늘리기 생존 경쟁',link:'http://www.jndn.com/article.php?aid=1776676791431190005',desc:'외국인 유학생 언어능력에서도 국립대·사립대 격차. 구조적 한계 노출.',pubDate:'2026-04-20',kw:['유학생','충원','지역대학'],r:'honam'},
-  {sub:'intl_student',title:'지방대 위기에 울산 4개 대학 총학 힘모은다',link:'https://www.ksilbo.co.kr/news/articleView.html?idxno=1051522',desc:'AI·평생교육 활성화와 외국인 유학생 유입 자구책. 울산과학대 7년 만에 충원율 100%.',pubDate:'2026-03-17',kw:['유학생','충원율','울산'],r:'yeongnam'},
+  // ═══ 🎓 학생 경쟁력: 외국인 유학생 ═══
+  {sub:'intl_student',title:'🌍 위기의 지방대, 유학생 유치로 활기',link:'https://n.news.naver.com/mnews/article/001/0016051655?sid=102',desc:'학령인구 감소와 수도권 쏠림 현상으로 지방대 위기가 심화되면서 외국인 유학생 유치가 대학의 핵심 생존전략으로 부상했다. 유학생 증가가 지역경제 활성화에도 기여하고 있다.',pubDate:'2026-04-30',kw:['유학생','지방대','생존전략'],r:'national'},
+  {sub:'intl_student',title:'🗣️ 학령인구 절벽탓… 지역대학, 유학생 늘리기 생존 경쟁',link:'http://www.jndn.com/article.php?aid=1776676791431190005',desc:'외국인 유학생의 한국어 능력에서도 국립대와 사립대 간 격차가 확인되었다. 유학생 증가가 지역대학 생존전략인 동시에 교육 품질과 관리 측면의 구조적 한계를 드러내는 측면도 있다.',pubDate:'2026-04-20',kw:['유학생','충원','지역대학'],r:'honam'},
+  {sub:'intl_student',title:'🤝 지방대 위기에 울산 4개 대학 총학 힘모은다',link:'https://www.ksilbo.co.kr/news/articleView.html?idxno=1051522',desc:'울산 지역 4개 대학 총학생회가 AI·평생교육 활성화와 외국인 유학생 유입 등 자구책 마련에 나섰다. 울산과학대학교는 이러한 노력 끝에 7년 만에 충원율 100%를 달성하는 성과를 거뒀다.',pubDate:'2026-03-17',kw:['유학생','충원율','울산'],r:'yeongnam'},
 
-  // ═══ 법인 책무성: 이사회·수익용기본재산 ═══
-  {sub:'governance',title:'경남대 총장 - 83개 사립대학 법인 재정건전성 종합평가',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423694',desc:'등록금의존율, 인건비지출율, 부채비율, 법인과 대학의 재정건전성 종합 평가.',pubDate:'2025-12-16',kw:['재정건전성','법인','이사회'],r:'yeongnam'},
-  {sub:'governance',title:'홍익대 이사장 - 법인전입금·수익용기본재산 확보율 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423850',desc:'교육비환원율·장학금 지급률 낮고 법인전입금·수익용기본재산 확보율도 미흡.',pubDate:'2025-12-17',kw:['수익용기본재산','법인전입금','법인책무성'],r:'capital'},
+  // ═══ 🏛️ 법인 책무성: 이사회·수익용기본재산 ═══
+  {sub:'governance',title:'⚖️ 경남대 총장 - 83개 사립대학 법인 재정건전성 종합평가',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423694',desc:'전국 83개 사립대학 법인을 대상으로 등록금의존율, 인건비지출율, 부채비율, 법인과 대학의 재정건전성을 종합 평가한 결과가 발표됐다. 법인-대학 간 재정 관계의 투명성 강화가 핵심 과제로 꼽혔다.',pubDate:'2025-12-16',kw:['재정건전성','법인','이사회'],r:'yeongnam'},
+  {sub:'governance',title:'📋 홍익대 이사장 - 법인전입금·수익용기본재산 확보율 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423850',desc:'홍익대의 교육비환원율과 장학금 지급률이 낮은 가운데, 법인전입금 비율과 수익용기본재산 확보율도 미흡한 수준으로 나타났다. 법인 책무성에 대한 낮은 인식이 구조적 문제로 지적됐다.',pubDate:'2025-12-17',kw:['수익용기본재산','법인전입금','법인책무성'],r:'capital'},
 
-  // ═══ 법인 책무성: 감사·정보공시 ═══
-  {sub:'audit',title:'한국사학진흥재단 대구·경북 대학생 타운홀미팅',link:'https://news.unn.net/news/articleView.html?idxno=592919',desc:'대학알리미를 통해 재정·교육·안전·학사 정보공시. 대학 통합 시 재정 운영 정보 공개.',pubDate:'2026-05-28',kw:['정보공시','대학알리미','재정'],r:'yeongnam'},
-  {sub:'audit',title:'아주대 테마캠퍼스 - 대학정보공시 기준 취업률 4위',link:'https://news.unn.net/news/articleView.html?idxno=592665',desc:'2025년 대학정보공시 기준 취업률 69.3%. 첨단산업 특성화대학 재정지원 116억.',pubDate:'2026-05-22',kw:['정보공시','취업률','재정지원'],r:'capital'},
+  // ═══ 🏛️ 법인 책무성: 감사·정보공시 ═══
+  {sub:'audit',title:'🔍 한국사학진흥재단 대구·경북 대학생 타운홀미팅',link:'https://news.unn.net/news/articleView.html?idxno=592919',desc:'대학알리미 플랫폼을 통해 재정·교육·안전·학사 등 종합 정보공시가 중점 진행되고 있다. 대학 통합 시 재정 운영 경비 부담률 등 핵심 정보가 학생 눈높이에서 공개됐다.',pubDate:'2026-05-28',kw:['정보공시','대학알리미','재정'],r:'yeongnam'},
+  {sub:'audit',title:'🏫 아주대 테마캠퍼스 - 대학정보공시 기준 취업률 4위',link:'https://news.unn.net/news/articleView.html?idxno=592665',desc:'아주대가 2025년 대학정보공시 기준 취업률 69.3%를 기록하며 졸업생 2000명 이상 대학 중 전국 4위에 올랐다. 첨단산업 특성화대학 재정지원사업에서도 116억 원을 확보했다.',pubDate:'2026-05-22',kw:['정보공시','취업률','재정지원'],r:'capital'},
 
-  // ═══ 법인 책무성: 교비횡령·비리 ═══
-  {sub:'corruption',title:'강경숙 의원, 사립대 교비 전용 비판 "더 이상 묵과 안돼"',link:'http://www.financialreview.co.kr/news/articleView.html?idxno=41483',desc:'사립대학 교비 횡령·전용 실태 강도 높게 비판. 사립학교법 일부개정안 조속 통과 촉구.',pubDate:'2026-04-07',kw:['교비횡령','비리','사립학교법'],r:'national'},
-  {sub:'corruption',title:'"학교"는 팔아도 "처벌"은 없다… 13년째 구멍 난 사립학교법',link:'https://n.news.naver.com/mnews/article/657/0000051128?sid=102',desc:'사립학교법 개정에 13년째 방치. 한국복지사이버대학교 비리 사례. 법 개정 시급.',pubDate:'2026-05-05',kw:['사립학교법','비리','처벌'],r:'yeongnam'},
+  // ═══ 🏛️ 법인 책무성: 교비횡령·비리 ═══
+  {sub:'corruption',title:'🚨 강경숙 의원, 사립대 교비 전용 비판 "더 이상 묵과 안돼"',link:'http://www.financialreview.co.kr/news/articleView.html?idxno=41483',desc:'강경숙 의원이 사립대학 교비 횡령·전용 실태를 강도 높게 비판하며 사립학교법 일부개정법률안의 조속한 통과를 촉구했다. 학생 등록금이 사학 권력자의 비리 은폐에 사용되고 있다고 지적했다.',pubDate:'2026-04-07',kw:['교비횡령','비리','사립학교법'],r:'national'},
+  {sub:'corruption',title:'⚠️ "학교"는 팔아도 "처벌"은 없다… 13년째 구멍 난 사립학교법',link:'https://n.news.naver.com/mnews/article/657/0000051128?sid=102',desc:'사립학교법 개정이 13년째 방치되면서 한국복지사이버대학교와 같은 사학 매매 비리 사례가 반복되고 있다. 교육부의 철저한 진상 규명과 국회의 조속한 법 개정이 시급하다는 비판이 이어졌다.',pubDate:'2026-05-05',kw:['사립학교법','비리','처벌'],r:'yeongnam'},
 
-  // ═══ 법인 책무성: 사립학교법 ═══
-  {sub:'law',title:'대학의 불법한 교수채용비리 사라져야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=850690',desc:'2025년 9월 사립학교 교원 임용 부정행위 시 임용취소 가능 개정사립학교법 시행.',pubDate:'2026-05-17',kw:['사립학교법','개정','채용비리'],r:'chungcheong'},
-  {sub:'law',title:'강경숙 "사립대학 교비횡령·전용실태… 반교육적 관행"',link:'http://www.lawissue.co.kr/view.php?ud=20260409112040613492eef753eb_12',desc:'사립학교법 일부개정안 처리, 교비 전용 실태 조사, 비리사학 엄중처벌 요구.',pubDate:'2026-04-09',kw:['사립학교법','개정','교비'],r:'national'},
-  {sub:'law',title:'교수 40.9% "서울대 10개, 비거점대 더 어렵게 만든다"',link:'https://www.kyosu.net/news/articleView.html?idxno=203312',desc:'사립학교법 전면 개정 필요성 지적. 교육개혁이 가장 미흡했다는 평가.',pubDate:'2026-04-13',kw:['사립학교법','개정','구조'],r:'national'},
+  // ═══ 🏛️ 법인 책무성: 사립학교법 ═══
+  {sub:'law',title:'📜 대학의 불법한 교수채용비리 사라져야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=850690',desc:'2025년 9월부터 사립학교 교원 임용 과정에서 부정행위가 확인될 경우 임용취소가 가능하도록 하는 개정사립학교법이 시행됐다. 채용비리 근절을 위한 제도적 장치가 강화되고 있다.',pubDate:'2026-05-17',kw:['사립학교법','개정','채용비리'],r:'chungcheong'},
+  {sub:'law',title:'🔨 강경숙 "사립대학 교비횡령·전용실태… 반교육적 관행"',link:'http://www.lawissue.co.kr/view.php?ud=20260409112040613492eef753eb_12',desc:'사립학교법 일부개정안의 즉각 처리, 사립학교 교비 전용 실태 조사와 비리사학 엄중처벌, 사학법인과 대학 당국의 보복성 징계 및 갑질 소송 중단 등이 핵심 요구사항으로 제시됐다.',pubDate:'2026-04-09',kw:['사립학교법','개정','교비'],r:'national'},
+  {sub:'law',title:'🗳️ 교수 40.9% "서울대 10개, 비거점대 더 어렵게 만든다"',link:'https://www.kyosu.net/news/articleView.html?idxno=203312',desc:'전횡 구조의 사립학교 문제를 풀기 위해 사립학교법의 전면 개정이 필요하다는 의견이 제기됐다. 교수 43.2%가 이재명 정부에서 가장 미흡했던 분야로 교육개혁을 꼽았다.',pubDate:'2026-04-13',kw:['사립학교법','개정','구조'],r:'national'},
 
-  // ═══ 지속가능성: 학령인구 대응 ═══
-  {sub:'demography',title:'대한민국 사립대학의 장래 (5)',link:'https://www.m-economynews.com/news/article.html?no=67241',desc:'학령인구 감소에 대비한 과감한 구조개선. 수도권-비수도권 격차에 따른 고등교육 혁신.',pubDate:'2026-05-22',kw:['학령인구','구조개선','사립대'],r:'national'},
-  {sub:'demography',title:'日, 사립대 40% 줄인다… 저출산 "대학 붕괴" 경고',link:'https://www.asiatoday.co.kr/kn/view.php?key=20260430010009881',desc:'일본 2040년까지 250개교·정원 14만명 감축. 대학 구조조정은 국가 인구전략 문제.',pubDate:'2026-04-30',kw:['학령인구','일본','구조조정'],r:'national'},
-  {sub:'demography',title:'"5극 3특" 실현을 위한 지방대학 발전 방안',link:'https://www.m-economynews.com/news/article.html?no=66488',desc:'학령인구 수도권 집중으로 특정 지역 집중 타격. 지방대 소멸 위기 가속화.',pubDate:'2026-04-16',kw:['학령인구','지방대','소멸'],r:'national'},
+  // ═══ 🌱 지속가능성: 학령인구 대응 ═══
+  {sub:'demography',title:'👶 대한민국 사립대학의 장래 (5)',link:'https://www.m-economynews.com/news/article.html?no=67241',desc:'학령인구 감소에 대비한 과감한 구조개선이 필요한 시점이다. 수도권과 비수도권 간 격차가 심화되면서 고등교육 혁신의 방향성에 대한 근본적 재설계가 요구되고 있다.',pubDate:'2026-05-22',kw:['학령인구','구조개선','사립대'],r:'national'},
+  {sub:'demography',title:'🇯🇵 日, 사립대 40% 줄인다… 저출산 "대학 붕괴" 경고',link:'https://www.asiatoday.co.kr/kn/view.php?key=20260430010009881',desc:'일본 정부가 2040년까지 250개교·정원 14만명 감축안을 발표했다. 대학 구조조정이 더 이상 교육계 내부 문제가 아니라 국가 인구전략과 지역 생존전략의 문제로 확대되고 있다.',pubDate:'2026-04-30',kw:['학령인구','일본','구조조정'],r:'national'},
+  {sub:'demography',title:'📍 "5극 3특" 실현을 위한 지방대학 발전 방안',link:'https://www.m-economynews.com/news/article.html?no=66488',desc:'학령인구가 단순 감소가 아닌 수도권 집중으로 특정 지역에 집중 타격을 주는 구조가 고착화되고 있다. 지방대 소멸 위기가 가속화되면서 5극 3특 전략에 맞춘 대학 재편이 시급하다.',pubDate:'2026-04-16',kw:['학령인구','지방대','소멸'],r:'national'},
 
-  // ═══ 지속가능성: 구조개혁·구조개선법 ═══
-  {sub:'reform',title:'"사립대학은 고등교육의 모세혈관"… 상생 해법은?',link:'http://news.ebs.co.kr/ebsnews/allView/60726012/N',desc:'8월 사립대학 구조개선법 시행 예정. "회생을 돕는 법"이 아닌 "폐교 정리 법"이 될 우려.',pubDate:'2026-05-19',kw:['구조개선법','폐교','사립대'],r:'national'},
-  {sub:'reform',title:'7개 신학대 생존 지원에 무게… 통폐합 기준 연구는 아직',link:'http://www.pckworld.com/article.php?aid=11093360678',desc:'8월 15일 사립대학구조개선법 시행으로 사립대 구조조정 본격화 전망.',pubDate:'2026-05-18',kw:['구조개선법','통폐합','구조조정'],r:'national'},
-  {sub:'reform',title:'문 닫는 대학, 질서 있는 퇴장 돕되 비리는 끝까지 환수',link:'https://n.news.naver.com/mnews/article/014/0005503012?sid=102',desc:'구조개선법 시행 준비. 통폐합 시 교원 확보율 70% 이상으로 완화. 폐교 대학 구성원 보호.',pubDate:'2026-04-06',kw:['구조개선법','통폐합','폐교'],r:'national'},
-  {sub:'reform',title:'2040년까지 250개 부실대학 폐교 선언한 일본 정부',link:'https://www.news2day.co.kr/article/20260505500004',desc:'일본 사립대학 통폐합·정원 삭감 본격화. 2025년 기준 일본 사립대학 53% 정원 미달.',pubDate:'2026-05-05',kw:['폐교','통폐합','일본'],r:'national'},
+  // ═══ 🌱 지속가능성: 구조개혁·구조개선법 ═══
+  {sub:'reform',title:'🔧 "사립대학은 고등교육의 모세혈관"… 상생 해법은?',link:'http://news.ebs.co.kr/ebsnews/allView/60726012/N',desc:'오는 8월 사립대학 구조개선법 시행이 예정된 가운데, 현장에서는 이 법이 "회생을 돕는 법"이 아니라 "폐교를 빠르게 정리하는 법"이 될 수 있다는 우려가 제기되고 있다.',pubDate:'2026-05-19',kw:['구조개선법','폐교','사립대'],r:'national'},
+  {sub:'reform',title:'⛪ 7개 신학대 생존 지원에 무게… 통폐합 기준 연구는 아직',link:'http://www.pckworld.com/article.php?aid=11093360678',desc:'8월 15일 사립대학구조개선법 시행을 앞두고 사립대 구조조정이 본격화될 전망이다. 학령인구 감소와 재정 악화로 어려움을 겪는 7개 신학교에 대한 생존 지원 방안이 우선 논의되고 있다.',pubDate:'2026-05-18',kw:['구조개선법','통폐합','구조조정'],r:'national'},
+  {sub:'reform',title:'🏚️ 문 닫는 대학, 질서 있는 퇴장 돕되 비리는 끝까지 환수',link:'https://n.news.naver.com/mnews/article/014/0005503012?sid=102',desc:'사립대학 구조개선법 시행 준비가 진행 중이다. 대학 간 통폐합 시 교원 확보율 기준을 70% 이상으로 완화해 부담을 줄이고, 폐교 대학 구성원 보호를 위한 방안도 함께 마련됐다.',pubDate:'2026-04-06',kw:['구조개선법','통폐합','폐교'],r:'national'},
+  {sub:'reform',title:'🇯🇵 2040년까지 250개 부실대학 폐교 선언한 일본 정부',link:'https://www.news2day.co.kr/article/20260505500004',desc:'일본 정부가 부실 사립대학들의 통폐합과 정원 삭감을 본격적으로 추진하고 있다. 2025년 기준 일본 내 사립대학의 53%가 신입학 정원 미달 상태로 구조적 위기가 가시화됐다.',pubDate:'2026-05-05',kw:['폐교','통폐합','일본'],r:'national'},
 
-  // ═══ 지속가능성: 지역연계·생존전략 ═══
-  {sub:'regional',title:'사립대 총장 65.5% "서울대 10개 만들기 도움 안 돼"',link:'http://www.metroseoul.co.kr/article/20260520500166',desc:'지역소멸과 지역사립대 발전 효과 부정적 평가. AI 교육과정 개발 95.4% 생존 전략 재편.',pubDate:'2026-05-20',kw:['지역사립대','생존전략','AI'],r:'national'},
-  {sub:'regional',title:'사총협, 사립대 글로벌 경쟁력 제고 - 사회적 가치 논의',link:'https://n.news.naver.com/mnews/article/030/0003427548?sid=102',desc:'균형발전과 지역 사립대학 역할. "AI 에이전트 시대, 대학 교육의 대전환과 생존 전략" 공유.',pubDate:'2026-05-14',kw:['지역사립대','생존전략','AI'],r:'national'},
-  {sub:'regional',title:'수도권 집중·대학 서열화 고착… 지역대학 체제 개편 필요',link:'https://n.news.naver.com/mnews/article/654/0000175945?sid=102',desc:'정부 5극 3특 국가균형성장전략에 맞춰 지역 사립대별 생존 전략 모색.',pubDate:'2026-04-16',kw:['지역대학','생존전략','균형발전'],r:'gangwon_jeju'},
+  // ═══ 🌱 지속가능성: 지역연계·생존전략 ═══
+  {sub:'regional',title:'🗺️ 사립대 총장 65.5% "서울대 10개 만들기 도움 안 돼"',link:'http://www.metroseoul.co.kr/article/20260520500166',desc:'사립대 총장의 65.5%가 서울대 10개 만들기 정책이 지역소멸 대응과 지역사립대 발전에 도움이 안 된다고 응답했다. 대신 AI 교육과정 개발(95.4%)로 생존 전략을 재편하고 있다.',pubDate:'2026-05-20',kw:['지역사립대','생존전략','AI'],r:'national'},
+  {sub:'regional',title:'🌐 사총협, 사립대 글로벌 경쟁력 제고 - 사회적 가치 논의',link:'https://n.news.naver.com/mnews/article/030/0003427548?sid=102',desc:'한국사립대학총장협의회가 균형발전과 지역 사립대학의 역할을 주제로 발표했다. 숭실대는 "AI 에이전트 시대, 대학 교육의 대전환과 생존 전략" 사례를 공유하며 혁신 방향을 제시했다.',pubDate:'2026-05-14',kw:['지역사립대','생존전략','AI'],r:'national'},
+  {sub:'regional',title:'🏙️ 수도권 집중·대학 서열화 고착… 지역대학 체제 개편 필요',link:'https://n.news.naver.com/mnews/article/654/0000175945?sid=102',desc:'정부의 5극 3특 국가균형성장전략에 맞춰 지방대학의 역할을 재정립하고, 지역 국공립대와 사립대별 생존 전략을 모색하기 위한 정책토론회가 국회의원회관에서 개최됐다.',pubDate:'2026-04-16',kw:['지역대학','생존전략','균형발전'],r:'gangwon_jeju'},
 
-  // ═══ 지속가능성: AI·디지털 전환 ═══
-  {sub:'ai_digital',title:'호서대, "K 올트먼·머스크" 키운다… AI 수업하고 투자자 연결',link:'https://n.news.naver.com/mnews/article/015/0005291856?sid=102',desc:'AI가 산업과 교육을 바꾸면서 대학 AI 전환 경쟁 본격화. 호서대 2019년 사립대 최초 AI 특화.',pubDate:'2026-05-27',kw:['AI','디지털전환','호서대'],r:'chungcheong'},
-  {sub:'ai_digital',title:'이경희 대교협 사무총장 - AI·디지털 전환 시대 대학 교육',link:'https://news.unn.net/news/articleView.html?idxno=592513',desc:'AI·디지털 전환 시대에 대학 혁신과 변화 절실. 8월 구조개선법 시행과 교육 패러다임 전환.',pubDate:'2026-05-17',kw:['AI','디지털전환','구조개선법'],r:'national'},
-  {sub:'ai_digital',title:'서울여대 - 국내 최초 클라우드 기반 AI 통합 플랫폼 구축',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여자대학교 국내 대학 최초 클라우드 기반 지능형 데이터 통합 분석 플랫폼.',pubDate:'2026-04-30',kw:['AI','클라우드','디지털전환'],r:'capital'},
-  {sub:'ai_digital',title:'연기만 피운 "서울대 10개"… 이재명 정부 1년, 대학 생태계 불만',link:'https://www.kyosu.net/news/articleView.html?idxno=206127',desc:'AI·디지털 분야 중심으로 대학과 산업 경계를 허무는 데 집중. AI·AX 부트캠프 4200명.',pubDate:'2026-05-21',kw:['AI','디지털전환','대학혁신'],r:'national'},
+  // ═══ 🌱 지속가능성: AI·디지털 전환 ═══
+  {sub:'ai_digital',title:'🤖 호서대, "K 올트먼·머스크" 키운다… AI 수업하고 투자자 연결',link:'https://n.news.naver.com/mnews/article/015/0005291856?sid=102',desc:'AI가 산업과 교육 질서를 빠르게 바꾸면서 대학에서도 AI 전환 경쟁이 본격화하고 있다. 호서대는 2019년 전국 사립대 최초로 AI 특화 교육을 도입하며 산학협력까지 AI 중심으로 재설계했다.',pubDate:'2026-05-27',kw:['AI','디지털전환','호서대'],r:'chungcheong'},
+  {sub:'ai_digital',title:'💡 이경희 대교협 사무총장 - AI·디지털 전환 시대 대학 교육',link:'https://news.unn.net/news/articleView.html?idxno=592513',desc:'AI·디지털 전환 시대에 대학의 혁신과 변화가 절실하다. 오는 8월 사립대학 구조개선법 시행과 함께 교육 패러다임의 근본적 전환이 필요하며, 대학 간 협력 체제 구축이 핵심이다.',pubDate:'2026-05-17',kw:['AI','디지털전환','구조개선법'],r:'national'},
+  {sub:'ai_digital',title:'☁️ 서울여대 - 국내 최초 클라우드 기반 AI 통합 플랫폼 구축',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여자대학교가 국내 대학 최초로 클라우드 기반의 지능형 데이터 통합 분석 플랫폼을 구축했다. 급변하는 고등교육 환경에 민첩하게 대응하고 캠퍼스 디지털 전환을 가속화하고 있다.',pubDate:'2026-04-30',kw:['AI','클라우드','디지털전환'],r:'capital'},
+  {sub:'ai_digital',title:'🎓 연기만 피운 "서울대 10개"… 이재명 정부 1년, 대학 생태계 불만',link:'https://www.kyosu.net/news/articleView.html?idxno=206127',desc:'이재명 정부가 AI·디지털 분야를 중심으로 대학과 산업 간 경계를 허무는 데 집중했다. AI·AX 부트캠프를 통해 4200명을 양성했으나 지역 사립대 총장들은 "재하청 처지"라며 불만을 표했다.',pubDate:'2026-05-21',kw:['AI','디지털전환','대학혁신'],r:'national'},
 ];
 
 let allNews = NEWS.map(n => {
