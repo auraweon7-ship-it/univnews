@@ -191,6 +191,22 @@
     <div class="meta-info">
       <span>갱신: 2026-06-01</span>
       <span id="totalCount">전체 0건</span>
+      <button id="apiKeyBtn" onclick="toggleApiKeyModal()" style="background:var(--accent);border:none;color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:0.3rem;">
+        <span id="apiKeyIcon">🔑</span> <span id="apiKeyLabel">API 키 설정</span>
+      </button>
+    </div>
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;justify-content:center;align-items:center;">
+      <div style="background:var(--card);border:1px solid var(--accent);border-radius:12px;padding:2rem;max-width:480px;width:90%;">
+        <div style="font-size:1rem;font-weight:800;color:var(--accent2);margin-bottom:0.8rem;">🔑 Claude API 키 설정</div>
+        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:1rem;">AI 종합 분석 인사이트 기능을 사용하려면 Anthropic API 키가 필요합니다.</div>
+        <input id="modalApiKeyInput" type="password" placeholder="sk-ant-..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.6rem 0.8rem;border-radius:6px;font-size:0.9rem;outline:none;margin-bottom:0.8rem;font-family:Consolas,monospace;">
+        <div style="display:flex;gap:0.5rem;justify-content:flex-end;">
+          <button onclick="clearApiKey()" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:0.45rem 1rem;border-radius:6px;cursor:pointer;font-size:0.82rem;">키 삭제</button>
+          <button onclick="toggleApiKeyModal()" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:0.45rem 1rem;border-radius:6px;cursor:pointer;font-size:0.82rem;">취소</button>
+          <button onclick="saveModalApiKey()" style="background:var(--accent);border:none;color:#fff;padding:0.45rem 1.2rem;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.82rem;">저장 및 분석</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -738,28 +754,49 @@ function renderTimelineChart(f){
   chartTimelineInst=new Chart(ctx,{type:'line',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),borderColor:'#a29bfe',backgroundColor:'rgba(162,155,254,0.15)',fill:true,tension:0.4,pointBackgroundColor:'#6c5ce7',pointRadius:6,borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#e4e6eb',font:{size:12}},grid:{color:'#2d314830'}},y:{ticks:{color:'#e4e6eb',font:{size:11},stepSize:1},grid:{color:'#2d314830'}}}}});
 }
 
+// ═══ API Key Modal ═══
+function toggleApiKeyModal(){
+  const m=document.getElementById('apiKeyModal');
+  const show=m.style.display!=='flex';
+  m.style.display=show?'flex':'none';
+  if(show){
+    const existing=localStorage.getItem('claude_api_key')||'';
+    document.getElementById('modalApiKeyInput').value=existing;
+    document.getElementById('modalApiKeyInput').focus();
+  }
+}
+function saveModalApiKey(){
+  const key=document.getElementById('modalApiKeyInput')?.value?.trim();
+  if(key){
+    localStorage.setItem('claude_api_key',key);
+    updateApiKeyBtn();
+    toggleApiKeyModal();
+    fetchAIInsight();
+  }
+}
+function clearApiKey(){
+  localStorage.removeItem('claude_api_key');
+  updateApiKeyBtn();
+  toggleApiKeyModal();
+  document.getElementById('aiLoading').style.display='block';
+  document.getElementById('aiBody').style.display='none';
+  document.getElementById('aiLoading').innerHTML='🔑 우측 상단 <b>API 키 설정</b> 버튼을 눌러 Claude API 키를 입력하면 AI 분석이 시작됩니다.';
+}
+function updateApiKeyBtn(){
+  const has=!!localStorage.getItem('claude_api_key');
+  document.getElementById('apiKeyIcon').textContent=has?'✅':'🔑';
+  document.getElementById('apiKeyLabel').textContent=has?'API 키 변경':'API 키 설정';
+}
+
 // ═══ AI Insight via Claude API ═══
-function getApiKey(){ return localStorage.getItem('claude_api_key'); }
-
-function showApiKeyInput(){
-  document.getElementById('aiLoading').innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
-      <div>🔑 AI 분석을 위해 Claude API 키를 입력하세요</div>
-      <div style="display:flex;gap:0.5rem;">
-        <input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.5rem 0.8rem;border-radius:6px;font-size:0.85rem;width:320px;outline:none;">
-        <button onclick="saveApiKey()" style="background:var(--accent);border:none;color:#fff;padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.85rem;">분석 시작</button>
-      </div>
-    </div>`;
-}
-
-function saveApiKey(){
-  const key=document.getElementById('apiKeyInput')?.value;
-  if(key){localStorage.setItem('claude_api_key',key);fetchAIInsight();}
-}
-
 async function fetchAIInsight(){
-  const apiKey=getApiKey();
-  if(!apiKey){showApiKeyInput();return;}
+  const apiKey=localStorage.getItem('claude_api_key');
+  if(!apiKey){
+    document.getElementById('aiLoading').innerHTML='🔑 우측 상단 <b>API 키 설정</b> 버튼을 눌러 Claude API 키를 입력하면 AI 분석이 시작됩니다.';
+    return;
+  }
+  document.getElementById('aiLoading').style.display='block';
+  document.getElementById('aiBody').style.display='none';
   document.getElementById('aiLoading').innerHTML='<span class="spinner"></span>Claude AI 분석 중...';
 
   const titles=allNews.map(n=>n.title).join('; ');
@@ -800,6 +837,7 @@ async function fetchAIInsight(){
 }
 
 render();
+updateApiKeyBtn();
 setTimeout(fetchAIInsight,500);
 </script>
 </body>
