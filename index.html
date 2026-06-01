@@ -131,15 +131,15 @@
   .empty-state .icon{font-size:2.5rem;margin-bottom:0.8rem;}
 
   /* Charts Section */
-  .charts-section{padding:1rem 2rem 0.5rem;border-top:2px solid var(--border);}
-  .charts-title{font-size:1rem;font-weight:800;color:var(--accent2);margin-bottom:0.8rem;}
-  .charts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;}
-  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;min-height:260px;}
-  .chart-card h3{font-size:0.78rem;color:var(--text-dim);font-weight:700;margin-bottom:0.6rem;text-align:center;}
-  .chart-card canvas{width:100%!important;height:200px!important;}
+  .charts-section{padding:1.2rem 2rem 0.8rem;border-top:2px solid var(--border);}
+  .charts-title{font-size:1.1rem;font-weight:800;color:var(--accent2);margin-bottom:1rem;}
+  .charts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;}
+  .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;min-height:340px;}
+  .chart-card h3{font-size:0.88rem;color:var(--text);font-weight:700;margin-bottom:0.8rem;text-align:center;}
+  .chart-card canvas{width:100%!important;height:280px!important;}
 
   /* Word Cloud */
-  .wordcloud-box{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0.3rem;min-height:200px;padding:0.5rem;}
+  .wordcloud-box{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0.4rem;min-height:280px;padding:0.8rem;}
   .wc-word{display:inline-block;padding:0.15rem 0.4rem;border-radius:4px;font-weight:700;cursor:default;transition:transform 0.15s;}
   .wc-word:hover{transform:scale(1.15);}
 
@@ -152,8 +152,7 @@
   .ai-insight-loading .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin-right:0.5rem;vertical-align:middle;}
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  @media(max-width:768px){.charts-grid{grid-template-columns:repeat(2,1fr);}}
-  @media(max-width:480px){.charts-grid{grid-template-columns:1fr;}}
+  @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}}
 
   /* Footer */
   .site-footer{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-top:1px solid var(--border);padding:2rem 2rem 1.5rem;margin-top:1rem;}
@@ -675,7 +674,7 @@ function renderMajorChart(f){
   const counts=MAJOR_IDS.map(id=>f.filter(n=>n.major===id).length);
   const ctx=document.getElementById('chartMajor');
   if(chartMajorInst)chartMajorInst.destroy();
-  chartMajorInst=new Chart(ctx,{type:'doughnut',data:{labels:MAJOR_NAMES,datasets:[{data:counts,backgroundColor:CHART_COLORS,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'#8b8fa3',font:{size:10},padding:8}}}}});
+  chartMajorInst=new Chart(ctx,{type:'doughnut',data:{labels:MAJOR_NAMES,datasets:[{data:counts,backgroundColor:CHART_COLORS,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{color:'#e4e6eb',font:{size:12},padding:12,usePointStyle:true}}}}});
 }
 
 function renderSourceChart(f){
@@ -683,7 +682,7 @@ function renderSourceChart(f){
   const sorted=Object.entries(sc).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const ctx=document.getElementById('chartSource');
   if(chartSourceInst)chartSourceInst.destroy();
-  chartSourceInst=new Chart(ctx,{type:'bar',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),backgroundColor:'#6c5ce7',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{color:'#2d314820'}},y:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{display:false}}}}});
+  chartSourceInst=new Chart(ctx,{type:'bar',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),backgroundColor:'#6c5ce7',borderRadius:6,barThickness:18}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#e4e6eb',font:{size:11}},grid:{color:'#2d314830'}},y:{ticks:{color:'#e4e6eb',font:{size:12}},grid:{display:false}}}}});
 }
 
 function renderTimelineChart(f){
@@ -691,25 +690,32 @@ function renderTimelineChart(f){
   const sorted=Object.entries(mc).sort((a,b)=>a[0].localeCompare(b[0]));
   const ctx=document.getElementById('chartTimeline');
   if(chartTimelineInst)chartTimelineInst.destroy();
-  chartTimelineInst=new Chart(ctx,{type:'line',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),borderColor:'#a29bfe',backgroundColor:'rgba(162,155,254,0.1)',fill:true,tension:0.4,pointBackgroundColor:'#6c5ce7',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#8b8fa3',font:{size:9}},grid:{color:'#2d314820'}},y:{ticks:{color:'#8b8fa3',font:{size:9},stepSize:1},grid:{color:'#2d314820'}}}}});
+  chartTimelineInst=new Chart(ctx,{type:'line',data:{labels:sorted.map(s=>s[0]),datasets:[{data:sorted.map(s=>s[1]),borderColor:'#a29bfe',backgroundColor:'rgba(162,155,254,0.15)',fill:true,tension:0.4,pointBackgroundColor:'#6c5ce7',pointRadius:6,borderWidth:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#e4e6eb',font:{size:12}},grid:{color:'#2d314830'}},y:{ticks:{color:'#e4e6eb',font:{size:11},stepSize:1},grid:{color:'#2d314830'}}}}});
 }
 
 // ═══ AI Insight via Claude API ═══
-function getApiKey(){
-  let key=localStorage.getItem('claude_api_key');
-  if(!key){
-    key=prompt('Claude API 키를 입력하세요 (AI 분석 기능 사용):');
-    if(key)localStorage.setItem('claude_api_key',key);
-  }
-  return key;
+function getApiKey(){ return localStorage.getItem('claude_api_key'); }
+
+function showApiKeyInput(){
+  document.getElementById('aiLoading').innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+      <div>🔑 AI 분석을 위해 Claude API 키를 입력하세요</div>
+      <div style="display:flex;gap:0.5rem;">
+        <input id="apiKeyInput" type="password" placeholder="sk-ant-..." style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.5rem 0.8rem;border-radius:6px;font-size:0.85rem;width:320px;outline:none;">
+        <button onclick="saveApiKey()" style="background:var(--accent);border:none;color:#fff;padding:0.5rem 1rem;border-radius:6px;cursor:pointer;font-weight:700;font-size:0.85rem;">분석 시작</button>
+      </div>
+    </div>`;
+}
+
+function saveApiKey(){
+  const key=document.getElementById('apiKeyInput')?.value;
+  if(key){localStorage.setItem('claude_api_key',key);fetchAIInsight();}
 }
 
 async function fetchAIInsight(){
   const apiKey=getApiKey();
-  if(!apiKey){
-    document.getElementById('aiLoading').innerHTML='🔑 API 키가 없어 AI 분석을 건너뜁니다. 페이지 새로고침 후 키를 입력하세요.';
-    return;
-  }
+  if(!apiKey){showApiKeyInput();return;}
+  document.getElementById('aiLoading').innerHTML='<span class="spinner"></span>Claude AI 분석 중...';
 
   const titles=allNews.map(n=>n.title).join('; ');
   const majorCounts={};allNews.forEach(n=>{const mt=MAJOR_TYPES.find(m=>m.id===n.major);majorCounts[mt?.label||n.major]=(majorCounts[mt?.label||n.major]||0)+1;});
