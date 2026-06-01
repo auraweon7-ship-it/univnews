@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국 사립대학교 뉴스 대시보드</title>
+<style>
+  :root {
+    --bg:#0f1117;--card:#1a1d27;--card-hover:#222633;
+    --accent:#6c5ce7;--accent2:#a29bfe;--text:#e4e6eb;--text-dim:#8b8fa3;
+    --border:#2d3148;--tag-bg:#2d2066;--tag-text:#c4b5fd;
+    --source-bg:#1e3a5f;--source-text:#7dd3fc;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;}
+
+  .header{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-bottom:1px solid var(--border);padding:2rem 2rem 1.5rem;}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;}
+  .header h1{font-size:1.8rem;font-weight:800;background:linear-gradient(135deg,#a29bfe,#6c5ce7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .header .subtitle{color:var(--text-dim);font-size:0.9rem;margin-top:0.3rem;}
+  .header .meta-info{display:flex;gap:1rem;align-items:center;color:var(--text-dim);font-size:0.85rem;}
+  .header .meta-info span{background:var(--card);padding:0.3rem 0.8rem;border-radius:6px;border:1px solid var(--border);}
+
+  /* Controls Row */
+  .controls{padding:1rem 2rem;display:flex;flex-wrap:wrap;gap:0.8rem;align-items:center;border-bottom:1px solid var(--border);background:rgba(26,29,39,0.6);}
+  .control-group{display:flex;align-items:center;gap:0.5rem;}
+  .control-group label{font-size:0.75rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;}
+  .ctrl-input{background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.65rem;border-radius:6px;font-size:0.83rem;outline:none;transition:border-color 0.2s;cursor:pointer;}
+  .ctrl-input:focus,.ctrl-input:hover{border-color:var(--accent);}
+  select.ctrl-input{padding-right:1.5rem;}
+  .search-input{width:160px;}
+  .sep{color:var(--text-dim);font-size:0.85rem;margin:0 -0.1rem;}
+
+  /* Date Presets */
+  .date-presets{display:flex;gap:0.3rem;margin-left:0.3rem;}
+  .preset-btn{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:0.25rem 0.55rem;border-radius:5px;font-size:0.72rem;cursor:pointer;font-weight:600;transition:all 0.15s;}
+  .preset-btn:hover{border-color:var(--accent);color:var(--text);}
+  .preset-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+
+  /* Perspective & Region Filters */
+  .filter-row{padding:1rem 2rem;display:flex;flex-wrap:wrap;gap:1.2rem;align-items:stretch;border-bottom:2px solid var(--border);background:linear-gradient(180deg,rgba(26,29,39,0.8) 0%,rgba(15,17,23,0.9) 100%);}
+  .filter-block{display:flex;flex-direction:column;gap:0.5rem;}
+  .filter-block .filter-label{font-size:0.82rem;color:var(--accent2);font-weight:800;letter-spacing:0.08em;text-transform:uppercase;}
+  .pill-group{display:flex;gap:0.4rem;flex-wrap:wrap;}
+  .pill{padding:0.5rem 1.1rem;border-radius:8px;border:2px solid var(--border);background:var(--card);color:var(--text-dim);cursor:pointer;font-size:0.88rem;font-weight:700;transition:all 0.2s;}
+  .pill:hover{border-color:var(--accent);color:var(--text);background:var(--card-hover);}
+  .pill.active{color:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+  .pill.active[data-v="all"]{background:var(--accent);border-color:var(--accent);}
+  /* perspective colors */
+  .pill.active[data-v="progressive"]{background:#2563eb;border-color:#3b82f6;}
+  .pill.active[data-v="moderate"]{background:#6d28d9;border-color:#8b5cf6;}
+  .pill.active[data-v="conservative"]{background:#dc2626;border-color:#ef4444;}
+  /* region colors */
+  .pill.active[data-v="capital"]{background:#0891b2;border-color:#06b6d4;}
+  .pill.active[data-v="chungcheong"]{background:#059669;border-color:#10b981;}
+  .pill.active[data-v="honam"]{background:#d97706;border-color:#f59e0b;}
+  .pill.active[data-v="yeongnam"]{background:#dc2626;border-color:#ef4444;}
+  .pill.active[data-v="gangwon_jeju"]{background:#7c3aed;border-color:#8b5cf6;}
+  .pill.active[data-v="national"]{background:#475569;border-color:#64748b;}
+  .filter-sep{width:2px;height:auto;min-height:40px;background:linear-gradient(180deg,transparent,var(--accent),transparent);margin:0 0.8rem;align-self:center;border-radius:1px;}
+
+  /* Major Types */
+  .major-types{padding:0.8rem 2rem 0.5rem;display:flex;flex-wrap:wrap;gap:0.5rem;border-bottom:1px solid var(--border);background:rgba(26,29,39,0.5);}
+  .major-btn{padding:0.5rem 1rem;border-radius:10px;border:2px solid var(--border);background:var(--card);color:var(--text-dim);cursor:pointer;font-size:0.83rem;font-weight:700;transition:all 0.2s;display:flex;align-items:center;gap:0.4rem;}
+  .major-btn:hover{border-color:var(--accent);color:var(--text);}
+  .major-btn.active{border-color:var(--accent);background:var(--accent);color:#fff;}
+  .major-btn .cnt{font-size:0.68rem;background:rgba(255,255,255,0.15);padding:0.1rem 0.45rem;border-radius:10px;}
+
+  /* Sub Categories */
+  .sub-categories{padding:0.5rem 2rem;display:flex;flex-wrap:wrap;gap:0.35rem;border-bottom:1px solid var(--border);background:rgba(26,29,39,0.3);}
+  .sub-btn{padding:0.3rem 0.7rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;font-size:0.76rem;font-weight:600;transition:all 0.15s;}
+  .sub-btn:hover{border-color:var(--accent);color:var(--text);}
+  .sub-btn.active{background:rgba(108,92,231,0.3);border-color:var(--accent);color:var(--accent2);}
+
+  /* Stats */
+  .stats-bar{display:flex;gap:0.8rem;padding:0.8rem 2rem;flex-wrap:wrap;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;flex:1;min-width:110px;}
+  .stat-card .sl{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;}
+  .stat-card .sv{font-size:1.4rem;font-weight:800;color:var(--accent2);margin-top:0.15rem;}
+  .stat-card .sv.sm{font-size:0.9rem;}
+
+  /* News Grid */
+  .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(370px,1fr));gap:1rem;padding:1.2rem 2rem 3rem;}
+  .news-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.25s;display:flex;flex-direction:column;}
+  .news-card:hover{border-color:var(--accent);background:var(--card-hover);transform:translateY(-2px);box-shadow:0 8px 30px rgba(108,92,231,0.15);}
+  .news-card .card-header{padding:0.9rem 1.1rem 0.25rem;display:flex;justify-content:space-between;align-items:flex-start;gap:0.4rem;}
+  .news-card .badges{display:flex;gap:0.25rem;flex-wrap:wrap;}
+  .news-card .major-badge{font-size:0.6rem;padding:0.12rem 0.45rem;border-radius:4px;font-weight:700;white-space:nowrap;}
+  .news-card .sub-badge{font-size:0.6rem;padding:0.12rem 0.4rem;border-radius:4px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,0.06);color:var(--text-dim);border:1px solid var(--border);}
+  .news-card .persp-badge{font-size:0.58rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:700;white-space:nowrap;}
+  .persp-progressive{background:#2563eb30;color:#93c5fd;border:1px solid #2563eb50;}
+  .persp-moderate{background:#6d28d930;color:#c4b5fd;border:1px solid #6d28d950;}
+  .persp-conservative{background:#dc262630;color:#fca5a5;border:1px solid #dc262650;}
+  .news-card .region-badge{font-size:0.58rem;padding:0.1rem 0.4rem;border-radius:3px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid var(--border);}
+  .news-card .date{font-size:0.73rem;color:var(--text-dim);white-space:nowrap;}
+  .news-card .title{padding:0.3rem 1.1rem 0.4rem;font-size:0.93rem;font-weight:700;line-height:1.5;}
+  .news-card .title a{color:inherit;text-decoration:none;}
+  .news-card .title a:hover{color:var(--accent2);}
+  .news-card .summary{padding:0 1.1rem 0.7rem;font-size:0.8rem;color:var(--text-dim);line-height:1.6;flex-grow:1;}
+  .news-card .card-footer{padding:0.6rem 1.1rem;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:0.35rem;align-items:center;}
+  .source-tag{font-size:0.68rem;background:var(--source-bg);color:var(--source-text);padding:0.12rem 0.45rem;border-radius:4px;font-weight:600;}
+  .keyword-tag{font-size:0.66rem;background:var(--tag-bg);color:var(--tag-text);padding:0.12rem 0.45rem;border-radius:4px;}
+
+  .mt-fiscal{background:#dc262620;color:#fca5a5;border:1px solid #dc262640;}
+  .mt-invest{background:#06b6d420;color:#67e8f9;border:1px solid #06b6d440;}
+  .mt-student{background:#10b98120;color:#6ee7b7;border:1px solid #10b98140;}
+  .mt-account{background:#f59e0b20;color:#fcd34d;border:1px solid #f59e0b40;}
+  .mt-sustain{background:#8b5cf620;color:#c4b5fd;border:1px solid #8b5cf640;}
+
+  .empty-state{grid-column:1/-1;text-align:center;padding:3rem 2rem;color:var(--text-dim);}
+  .empty-state .icon{font-size:2.5rem;margin-bottom:0.8rem;}
+
+  /* Footer */
+  .site-footer{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-top:1px solid var(--border);padding:2rem 2rem 1.5rem;margin-top:1rem;}
+  .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between;align-items:flex-start;}
+  .footer-profile{flex:1;min-width:260px;}
+  .footer-name{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:0.3rem;}
+  .footer-name-sub{font-size:0.85rem;color:var(--text-dim);margin-bottom:0.6rem;}
+  .footer-affil{font-size:0.82rem;color:var(--text-dim);line-height:1.7;}
+  .footer-affil a{color:var(--accent2);text-decoration:none;font-weight:600;}
+  .footer-affil a:hover{text-decoration:underline;}
+  .footer-links{flex:0 0 auto;display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end;}
+  .footer-link-item{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-dim);}
+  .footer-link-item a{color:var(--accent2);text-decoration:none;font-weight:600;padding:0.25rem 0.7rem;border:1px solid var(--border);border-radius:6px;transition:all 0.2s;}
+  .footer-link-item a:hover{border-color:var(--accent);background:rgba(108,92,231,0.15);}
+  .footer-copy{width:100%;text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-dim);}
+  @media(max-width:768px){.footer-inner{flex-direction:column;align-items:center;text-align:center;}.footer-links{align-items:center;}}
+
+  @media(max-width:768px){
+    .header{padding:1.5rem 1rem 1rem;}.header h1{font-size:1.3rem;}
+    .controls,.filter-row,.major-types,.sub-categories,.stats-bar,.news-grid{padding-left:1rem;padding-right:1rem;}
+    .news-grid{grid-template-columns:1fr;}
+  }
+  ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <h1>한국 사립대학교 뉴스 대시보드</h1>
+      <div class="subtitle">5대 유형 + 관점 + 지역별 사립대 이슈 모니터링</div>
+    </div>
+    <div class="meta-info">
+      <span>갱신: 2026-06-01</span>
+      <span id="totalCount">전체 0건</span>
+    </div>
+  </div>
+</div>
+
+<!-- Controls: Date + Sort + Search -->
+<div class="controls">
+  <div class="control-group">
+    <label>기간</label>
+    <input type="date" id="dateFrom" class="ctrl-input" value="2025-01-01">
+    <span class="sep">~</span>
+    <input type="date" id="dateTo" class="ctrl-input" value="2026-06-01">
+    <div class="date-presets" id="datePresets">
+      <button class="preset-btn" data-months="1">1개월</button>
+      <button class="preset-btn" data-months="3">3개월</button>
+      <button class="preset-btn" data-months="6">6개월</button>
+      <button class="preset-btn active" data-months="18">전체</button>
+    </div>
+  </div>
+  <div class="control-group">
+    <label>정렬</label>
+    <select id="sortBy" class="ctrl-input">
+      <option value="date-desc">최신순</option>
+      <option value="date-asc">오래된순</option>
+    </select>
+  </div>
+  <div class="control-group">
+    <label>검색</label>
+    <input type="text" id="searchInput" class="ctrl-input search-input" placeholder="키워드 검색...">
+  </div>
+</div>
+
+<!-- Perspective + Region Filters -->
+<div class="filter-row">
+  <div class="filter-block">
+    <span class="filter-label">관점</span>
+    <div class="pill-group" id="perspFilter">
+      <button class="pill active" data-v="all">전체</button>
+      <button class="pill" data-v="progressive">진보</button>
+      <button class="pill" data-v="moderate">중도</button>
+      <button class="pill" data-v="conservative">보수</button>
+    </div>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-block">
+    <span class="filter-label">지역</span>
+    <div class="pill-group" id="regionFilter">
+      <button class="pill active" data-v="all">전체</button>
+      <button class="pill" data-v="capital">수도권</button>
+      <button class="pill" data-v="chungcheong">충청권</button>
+      <button class="pill" data-v="honam">호남권</button>
+      <button class="pill" data-v="yeongnam">영남권</button>
+      <button class="pill" data-v="gangwon_jeju">강원·제주</button>
+      <button class="pill" data-v="national">전국·정책</button>
+    </div>
+  </div>
+</div>
+
+<div class="major-types" id="majorTypes"></div>
+<div class="sub-categories" id="subCategories"></div>
+<div class="stats-bar" id="statsBar"></div>
+<div class="news-grid" id="newsGrid"></div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-profile">
+      <div class="footer-name">박정원 | 朴正元 | Park Jeong Weon</div>
+      <div class="footer-name-sub">교수</div>
+      <div class="footer-affil">
+        한국외국어대학교 중국학대학 중국언어문화학부<br>
+        <a href="https://k-ai.it.kr/" target="_blank" rel="noopener">K-AI 교육네트워크</a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-link-item">APP <a href="https://kletter.kr" target="_blank" rel="noopener">kletter.kr</a></div>
+      <div class="footer-link-item">APP <a href="https://kteacher.kr" target="_blank" rel="noopener">kteacher.kr</a></div>
+    </div>
+    <div class="footer-copy">&copy; 2026 Park Jeong Weon. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+const MAJOR_TYPES = [
+  {id:'all',label:'전체',cssClass:''},
+  {id:'fiscal',label:'재정 건전성',cssClass:'mt-fiscal',subs:['tuition','fund_transfer','reserve','debt']},
+  {id:'invest',label:'교육 투자',cssClass:'mt-invest',subs:['edu_cost','edu_return','scholarship','faculty']},
+  {id:'student',label:'학생 경쟁력',cssClass:'mt-student',subs:['enrollment','dropout','employment','intl_student']},
+  {id:'account',label:'법인 책무성',cssClass:'mt-account',subs:['governance','audit','corruption','law']},
+  {id:'sustain',label:'지속가능성',cssClass:'mt-sustain',subs:['demography','reform','regional','ai_digital']},
+];
+const SUB_CATS = {
+  tuition:{label:'등록금·등록금의존율',major:'fiscal'},
+  fund_transfer:{label:'법인전입금',major:'fiscal'},
+  reserve:{label:'적립금·이월금',major:'fiscal'},
+  debt:{label:'부채·재정위기',major:'fiscal'},
+  edu_cost:{label:'학생1인당 교육비',major:'invest'},
+  edu_return:{label:'교육비환원율',major:'invest'},
+  scholarship:{label:'장학금',major:'invest'},
+  faculty:{label:'교원확보율',major:'invest'},
+  enrollment:{label:'충원율',major:'student'},
+  dropout:{label:'중도탈락률',major:'student'},
+  employment:{label:'취업률',major:'student'},
+  intl_student:{label:'외국인 유학생',major:'student'},
+  governance:{label:'이사회·수익용기본재산',major:'account'},
+  audit:{label:'감사·정보공시',major:'account'},
+  corruption:{label:'교비횡령·비리',major:'account'},
+  law:{label:'사립학교법',major:'account'},
+  demography:{label:'학령인구 대응',major:'sustain'},
+  reform:{label:'구조개혁·구조개선법',major:'sustain'},
+  regional:{label:'지역연계·생존전략',major:'sustain'},
+  ai_digital:{label:'AI·디지털 전환',major:'sustain'},
+};
+
+const PERSP_LABELS = {progressive:'진보',moderate:'중도',conservative:'보수'};
+const REGION_LABELS = {capital:'수도권',chungcheong:'충청권',honam:'호남권',yeongnam:'영남권',gangwon_jeju:'강원·제주',national:'전국·정책'};
+
+// Source → Perspective mapping
+const SRC_PERSP = {
+  progressive:['한겨레','프레시안','오마이뉴스','여성신문','매일노동뉴스','EBS','경향신문','법률이슈','파이낸셜리뷰'],
+  conservative:['한국경제','세계일보','월간조선','서울경제','중앙일보','매일신문','조선일보','동아일보'],
+  moderate:['연합뉴스','교수신문','한국대학신문','비즈니스포스트','뉴스1','파이낸셜뉴스','이데일리','뉴스투데이','서울신문','전자신문','에듀동아','농민신문','지디넷','대한경제','아시아투데이','아시아타임즈','EBN','가톨릭평화방송','더스쿱','노컷뉴스','잡포스트','대구일보','디지털타임스','한국일보','뉴스워커','메트로','광주드림','동양일보','광주매일','경북매일','경상일보','경남매일','경남뉴스','경남도민','이뉴스투데이','충북일보','전남일보','강원도민일보','매경이코노미','기독공보','대구MBC','안동MBC','포항MBC']
+};
+
+function clean(s){return s.replace(/<\/?b>/g,'').replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');}
+function getSource(link){
+  try{
+    const h=new URL(link).hostname.replace('www.','').replace('n.news.naver.com','네이버뉴스');
+    const m={'news.unn.net':'한국대학신문','news.cpbc.co.kr':'가톨릭평화방송','thescoop.co.kr':'더스쿱','segye.com':'세계일보','nocutnews.co.kr':'노컷뉴스','kyosu.net':'교수신문','gjdream.com':'광주드림','dynews.co.kr':'동양일보','job-post.co.kr':'잡포스트','pressian.com':'프레시안','dkilbo.com':'대구일보','dt.co.kr':'디지털타임스','hankookilbo.com':'한국일보','newsworker.co.kr':'뉴스워커','hani.co.kr':'한겨레','monthly.chosun.com':'월간조선','news2day.co.kr':'뉴스투데이','seoul.co.kr':'서울신문','fnnews.com':'파이낸셜뉴스','ohmynews.com':'오마이뉴스','womennews.co.kr':'여성신문','gosiweek.com':'고시위크','metroseoul.co.kr':'메트로','etnews.com':'전자신문','hankyung.com':'한국경제','joongang.co.kr':'중앙일보','businesspost.co.kr':'비즈니스포스트','news1.kr':'뉴스1','edaily.co.kr':'이데일리','nongmin.com':'농민신문','asiatoday.co.kr':'아시아투데이','yna.co.kr':'연합뉴스','jndn.com':'전남일보','pckworld.com':'기독공보','kado.net':'강원도민일보','m-economynews.com':'매경이코노미','laborplus.co.kr':'매일노동뉴스','lawissue.co.kr':'법률이슈','dgmbc.com':'대구MBC','sedaily.com':'서울경제','asiatime.co.kr':'아시아타임즈','edu.donga.com':'에듀동아','zdnet.co.kr':'지디넷','dnews.co.kr':'대한경제','kwangju.co.kr':'광주일보','ebs.co.kr':'EBS','financialreview.co.kr':'파이낸셜리뷰','ksilbo.co.kr':'경상일보','kjdaily.com':'광주매일','imaeil.com':'매일신문','kbmaeil.com':'경북매일','m-joongang.com':'중앙일보','ebn.co.kr':'EBN','gnmaeil.com':'경남매일','gndomin.com':'경남도민','newsgn.com':'경남뉴스','enewstoday.co.kr':'이뉴스투데이','inews365.com':'충북일보','네이버뉴스':'네이버뉴스','andongmbc.co.kr':'안동MBC','phmbc.co.kr':'포항MBC'};
+    for(const[k,v] of Object.entries(m)) if(h.includes(k.replace('www.',''))) return v;
+    return h;
+  }catch{return '언론사';}
+}
+function getPersp(src){
+  for(const[p,list] of Object.entries(SRC_PERSP)) if(list.includes(src)) return p;
+  return 'moderate';
+}
+function summary(d,n=100){let c=clean(d).replace(/\s+/g,' ').trim();return c.length>n?c.slice(0,n)+'...':c;}
+
+// p=perspective, r=region
+const NEWS = [
+  // ═══ 재정 건전성: 등록금 ═══
+  {sub:'tuition',title:'올해 130개 대학 등록금 인상… 의대생 1000만 원 넘어',link:'https://news.cpbc.co.kr/article/1172534?division=NAVER',desc:'2026학년도 4년제 192개 대학 중 130개 등록금 인상. 평균 727만원으로 전년 대비 2.1% 상승. 사립 823만1500원.',pubDate:'2026-04-29',kw:['등록금','인상','사립대'],r:'national'},
+  {sub:'tuition',title:'사립대 등록금 인상의 부메랑 - 교육물가 15년 만에 최대',link:'https://n.news.naver.com/mnews/article/665/0000007003?sid=101',desc:'2025년 사립대 평균 인상률 4.9%, 국·공립대 0.7%로 사립대 등록금 인상이 교육물가 상승의 뇌관 역할.',pubDate:'2026-03-17',kw:['등록금','인상','교육물가'],r:'national'},
+  {sub:'tuition',title:'대학 등록금 인상에 교육물가 15년 만에 최대폭 상승',link:'https://n.news.naver.com/mnews/article/022/0004113236?sid=101',desc:'반값등록금 동참하던 대학들이 인상 전환. 2026년 66% 대학이 인상 예고. 교육물가 2.3% 기록.',pubDate:'2026-03-16',kw:['등록금','인상','동결'],r:'national'},
+  {sub:'tuition',title:'사립대 "줄인상" 국립대 "동결"… 등록금 쌍곡선',link:'http://www.gjdream.com/news/articleView.html?idxno=667293',desc:'국립대학 동결 유지, 사립대학 줄줄이 인상 대열 합류. 조선대 2026학년도 등록금 인상 확정.',pubDate:'2026-02-23',kw:['등록금','인상','동결'],r:'honam'},
+  {sub:'tuition',title:'등록금 올려도 물가 영향 없다? 대학총장 대표의 오류는',link:'https://n.news.naver.com/mnews/article/079/0004123156?sid=102',desc:'2025년 사립대학교 납입금 전년대비 5.2% 상승. 급격한 등록금 인상은 물가를 밀어올리는 뇌관.',pubDate:'2026-03-10',kw:['등록금','인상','물가'],r:'national'},
+
+  // ═══ 재정 건전성: 법인전입금 ═══
+  {sub:'fund_transfer',title:'대학평가 8위 세종대, 법인은 37위… 재정 지원 부실',link:'https://n.news.naver.com/mnews/article/015/0005195994?sid=102',desc:'광운대 법인전입금 비율 0.18%, 법정부담금 6.5%. 법인 재정 기여 없어 등록금의존율 60.89%.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','재정건전성'],r:'capital'},
+  {sub:'fund_transfer',title:'병원 수익 탄탄한 일송학원… 등록금의존율 26%에 불과',link:'https://n.news.naver.com/mnews/article/015/0005195987?sid=102',desc:'한림대 법인전입금 덕분에 등록금의존율 26.64%. 가톨릭대도 법인전입금 비율 우수.',pubDate:'2025-10-13',kw:['법인전입금','등록금의존율','한림대'],r:'capital'},
+  {sub:'fund_transfer',title:'재정·이사회 분석… 83개 대학법인 체질 진단',link:'https://n.news.naver.com/mnews/article/015/0005195976?sid=102',desc:'사립대 비중 80%. 법인전입금 비율 높을수록 등록금의존율 낮아짐. 법인-대학 재정건전성 종합 평가.',pubDate:'2025-10-13',kw:['법인전입금','재정건전성','대학법인'],r:'national'},
+  {sub:'fund_transfer',title:'서울여대 법인전입금 0.4%… 대학평균 7.4% 대비 극히 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 등록금의존율 54.3%로 평균 47.7% 초과. 법인전입금·수익용기본재산 확보율 모두 평균 미달.',pubDate:'2026-04-30',kw:['법인전입금','등록금의존율','서울여대'],r:'capital'},
+
+  // ═══ 재정 건전성: 적립금·이월금 ═══
+  {sub:'reserve',title:'사립 4년제 대학 적립금 증권투자, 2022년 이후 급증',link:'https://news.unn.net/news/articleView.html?idxno=592621',desc:'2007년 사립학교법 개정으로 적립금 1/2 한도 내 증권 취득 허용. 2022년 이후 증권투자 급증 추세.',pubDate:'2026-05-18',kw:['적립금','증권투자','사립학교법'],r:'national'},
+  {sub:'reserve',title:'한국사학진흥재단, 학생들 앞에 "대학 살림표" 펼쳤다',link:'https://www.dkilbo.com/news/articleView.html?idxno=545280',desc:'사립대 적립금 11조 원이나 법정 5가지 용도로 묶여 있어 자유롭게 쓸 수 있는 돈은 제한적.',pubDate:'2026-05-27',kw:['적립금','재정','사립대'],r:'yeongnam'},
+  {sub:'reserve',title:'"내 등록금 어디로" 한국사학진흥재단 타운홀미팅',link:'https://www.job-post.co.kr/news/articleView.html?idxno=216955',desc:'11조 원 사립대 적립금은 사립학교법상 5가지 용도로 묶여 있어 등록금 인하 재원 전용 불가.',pubDate:'2026-05-28',kw:['적립금','등록금','사립학교법'],r:'yeongnam'},
+
+  // ═══ 재정 건전성: 부채·재정위기 ═══
+  {sub:'debt',title:'연세대 부채 1274억 원인데 부채비율 6.8%… 사립대 재정 분석',link:'https://news.unn.net/news/articleView.html?idxno=592522',desc:'부채가 기본금의 절반에 육박. 등록금 수입 추가 감소 시 자본잠식 가능성도 배제할 수 없다.',pubDate:'2026-05-14',kw:['부채','재정위기','연세대'],r:'capital'},
+  {sub:'debt',title:'사립대의 채용 비리 "사학감독원"으로 차단해야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=852322',desc:'학령인구 감소와 지역대학 위기 속 국가는 사립대에 막대한 재정 투입. 재원 사용 감독 필요.',pubDate:'2026-05-31',kw:['재정위기','사학감독','사립대'],r:'chungcheong'},
+  {sub:'debt',title:'한국대학홍보협의회 "2026년 춘계세미나" 개최',link:'https://news.unn.net/news/articleView.html?idxno=592896',desc:'학령인구 감소와 대학의 재정 위기 속 대학 홍보인들의 전문성·신뢰 기반 대응 전략 논의.',pubDate:'2026-05-27',kw:['재정위기','학령인구','사립대'],r:'national'},
+
+  // ═══ 교육 투자: 학생1인당 교육비 ═══
+  {sub:'edu_cost',title:'"서울대 10개" 실효성 높이려면… 선택과 집중 구조개혁 병행 필요',link:'https://news.unn.net/news/articleView.html?idxno=592880',desc:'재정지원 확대에도 학생 1인당 교육비와 연구 성과에서 사립대학·국립대학 법인 간 격차 지속.',pubDate:'2026-05-27',kw:['교육비','1인당','격차'],r:'national'},
+  {sub:'edu_cost',title:'"서울대 10개" 국립대 지원에 사립대 "역차별" 집단 반발',link:'https://n.news.naver.com/mnews/article/421/0008910297?sid=102',desc:'사립대 재정 제약 속 국립대 대규모 재정 투입으로 교육비 격차 확대 우려. 우수 학생 유치 경쟁력 약화.',pubDate:'2026-04-24',kw:['교육비','격차','사립대'],r:'national'},
+  {sub:'edu_cost',title:'거점국립대 3곳에 1000억씩 투자',link:'https://n.news.naver.com/mnews/article/662/0000093123?sid=102',desc:'거점국립대 학생 1인당 교육비를 서울대의 70%(2030년 약 4400만원)로 높이는 계획.',pubDate:'2026-04-16',kw:['교육비','1인당','거점국립대'],r:'national'},
+  {sub:'edu_cost',title:'수도권 국공립대 교육비, 지방보다 262.7%p 높아',link:'https://news.unn.net/news/articleView.html?idxno=590668',desc:'국공립대 학생 1인당 교육비가 평균 등록금의 6.6배. 수도권과 지방 간 극심한 격차.',pubDate:'2026-03-11',kw:['교육비','1인당','격차'],r:'national'},
+
+  // ═══ 교육 투자: 교육비환원율 ═══
+  {sub:'edu_return',title:'서울여대 교육비환원율 187.3%… 대학평균 271.1% 대비 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여대 교육비환원율 187.3%로 사립대 평균 271.1%에 못 미침. 장학금 지급도 평균 이하.',pubDate:'2026-04-30',kw:['교육비환원율','장학금','서울여대'],r:'capital'},
+  {sub:'edu_return',title:'가톨릭대 교육비환원율 352.2%… 사립대 평균 상회',link:'https://www.businesspost.co.kr/BP?command=article_view&num=427194',desc:'가톨릭대 교육비환원율 352.2%로 사립대 평균 상회. 등록금의존율 34.8%로 양호.',pubDate:'2026-01-19',kw:['교육비환원율','가톨릭대','등록금의존율'],r:'capital'},
+  {sub:'edu_return',title:'교수들이 "AI 대학진단 플랫폼" 만들었다',link:'http://www.kyosu.net/news/articleView.html?idxno=153223',desc:'교육비환원율·부채비율 등 재정 지속가능성 지표와 전임교원확보율·취업률·장학금 등 교육투자 지표 통합 분석.',pubDate:'2025-12-24',kw:['교육비환원율','AI','대학진단'],r:'national'},
+
+  // ═══ 교육 투자: 장학금·교원확보 ═══
+  {sub:'scholarship',title:'상명대 장학금 지원율 47.9%… 사립대 평균 53.5% 미달',link:'https://www.businesspost.co.kr/BP?command=article_view&num=428091',desc:'상명대 교육비환원율 190.4%로 격차. 총 장학금 지원율 사립대 평균에 미달.',pubDate:'2026-01-27',kw:['장학금','교육비환원율','상명대'],r:'capital'},
+  {sub:'faculty',title:'게으른 교수를 거르는 것도 개혁이다',link:'https://n.news.naver.com/mnews/article/469/0000931963?sid=110',desc:'재정투자 확대와 교원 인사제도·보상체계 개선 필요. 수도권 주요 사립대 수준으로 심사기준 강화.',pubDate:'2026-05-21',kw:['교원확보','교수','심사기준'],r:'national'},
+
+  // ═══ 학생 경쟁력: 충원율 ═══
+  {sub:'enrollment',title:'나주대 신입생 충원율 97.4%… 지방대 위기 정면 돌파',link:'https://n.news.naver.com/mnews/article/081/0003623719?sid=102',desc:'전국 지방대학 미달 사태 속 나주대 충원율 97.4% 달성. 학과 구조 개편과 유학생 유치 성과.',pubDate:'2026-03-07',kw:['충원율','지방대','나주대'],r:'honam'},
+  {sub:'enrollment',title:'광주·전남 사립대 신입생 등록률 100% 육박',link:'http://www.kjdaily.com/article.php?aid=1772619431674254033',desc:'지역 발전과 연계한 교육사업, 외국인 유학생 유치 등 다양한 노력으로 높은 충원율.',pubDate:'2026-03-04',kw:['충원율','신입생','사립대'],r:'honam'},
+  {sub:'enrollment',title:'영남이공대, 4년 연속 신입생 100% 충원 달성',link:'https://www.kbmaeil.com/article/20260302500438',desc:'산업 수요 반영 학과 개편, 성인학습자·외국인 유학생 유치 확대로 100% 충원.',pubDate:'2026-03-02',kw:['충원율','100%','영남이공대'],r:'yeongnam'},
+
+  // ═══ 학생 경쟁력: 중도탈락률 ═══
+  {sub:'dropout',title:'안양대 총장 "AI 시대 교육 체계 혁신적 변화 추구"',link:'https://news.unn.net/news/articleView.html?idxno=581552',desc:'학과 취업률·중도탈락률·충원율 면밀 분석으로 대학 구조조정 추진. 2026년 취업률 72% 목표.',pubDate:'2025-07-22',kw:['중도탈락률','취업률','충원율'],r:'capital'},
+  {sub:'dropout',title:'경상국립대 - 중도탈락률 감소와 충원율 향상 추진',link:'http://www.gndomin.com/news/articleView.html?idxno=438594',desc:'AI 기반 연구·행정지원 시스템 도입과 중도탈락률 감소, 충원율 향상 제도적 대응.',pubDate:'2025-06-22',kw:['중도탈락률','충원율','AI'],r:'yeongnam'},
+
+  // ═══ 학생 경쟁력: 취업률 ═══
+  {sub:'employment',title:'전문대학, 낮은 교육비 여건 속 취업률 72.1% 기록',link:'https://edu.donga.com/news/articleView.html?idxno=107928',desc:'대학정보공시 분석 전문대학 취업률 현황. 지속적 재정지원 필요.',pubDate:'2026-05-22',kw:['취업률','전문대학','교육비'],r:'national'},
+  {sub:'employment',title:'아주대 취업률 69.3%… 졸업생 2000명 이상 대학 중 4위',link:'https://n.news.naver.com/mnews/article/015/0005289778?sid=102',desc:'대학정보공시 기준 취업률 69.3% 전국 4위. 현장 중심 교육이 사회 진출로 연결.',pubDate:'2026-05-21',kw:['취업률','아주대','정보공시'],r:'capital'},
+
+  // ═══ 학생 경쟁력: 외국인 유학생 ═══
+  {sub:'intl_student',title:'위기의 지방대, 유학생 유치로 활기',link:'https://n.news.naver.com/mnews/article/001/0016051655?sid=102',desc:'학령인구 감소와 수도권 쏠림으로 지방대 위기 심화. 외국인 유학생 유치가 생존전략.',pubDate:'2026-04-30',kw:['유학생','지방대','생존전략'],r:'national'},
+  {sub:'intl_student',title:'학령인구 절벽탓… 지역대학, 유학생 늘리기 생존 경쟁',link:'http://www.jndn.com/article.php?aid=1776676791431190005',desc:'외국인 유학생 언어능력에서도 국립대·사립대 격차. 구조적 한계 노출.',pubDate:'2026-04-20',kw:['유학생','충원','지역대학'],r:'honam'},
+  {sub:'intl_student',title:'지방대 위기에 울산 4개 대학 총학 힘모은다',link:'https://www.ksilbo.co.kr/news/articleView.html?idxno=1051522',desc:'AI·평생교육 활성화와 외국인 유학생 유입 자구책. 울산과학대 7년 만에 충원율 100%.',pubDate:'2026-03-17',kw:['유학생','충원율','울산'],r:'yeongnam'},
+
+  // ═══ 법인 책무성: 이사회·수익용기본재산 ═══
+  {sub:'governance',title:'경남대 총장 - 83개 사립대학 법인 재정건전성 종합평가',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423694',desc:'등록금의존율, 인건비지출율, 부채비율, 법인과 대학의 재정건전성 종합 평가.',pubDate:'2025-12-16',kw:['재정건전성','법인','이사회'],r:'yeongnam'},
+  {sub:'governance',title:'홍익대 이사장 - 법인전입금·수익용기본재산 확보율 저조',link:'https://www.businesspost.co.kr/BP?command=article_view&num=423850',desc:'교육비환원율·장학금 지급률 낮고 법인전입금·수익용기본재산 확보율도 미흡.',pubDate:'2025-12-17',kw:['수익용기본재산','법인전입금','법인책무성'],r:'capital'},
+
+  // ═══ 법인 책무성: 감사·정보공시 ═══
+  {sub:'audit',title:'한국사학진흥재단 대구·경북 대학생 타운홀미팅',link:'https://news.unn.net/news/articleView.html?idxno=592919',desc:'대학알리미를 통해 재정·교육·안전·학사 정보공시. 대학 통합 시 재정 운영 정보 공개.',pubDate:'2026-05-28',kw:['정보공시','대학알리미','재정'],r:'yeongnam'},
+  {sub:'audit',title:'아주대 테마캠퍼스 - 대학정보공시 기준 취업률 4위',link:'https://news.unn.net/news/articleView.html?idxno=592665',desc:'2025년 대학정보공시 기준 취업률 69.3%. 첨단산업 특성화대학 재정지원 116억.',pubDate:'2026-05-22',kw:['정보공시','취업률','재정지원'],r:'capital'},
+
+  // ═══ 법인 책무성: 교비횡령·비리 ═══
+  {sub:'corruption',title:'강경숙 의원, 사립대 교비 전용 비판 "더 이상 묵과 안돼"',link:'http://www.financialreview.co.kr/news/articleView.html?idxno=41483',desc:'사립대학 교비 횡령·전용 실태 강도 높게 비판. 사립학교법 일부개정안 조속 통과 촉구.',pubDate:'2026-04-07',kw:['교비횡령','비리','사립학교법'],r:'national'},
+  {sub:'corruption',title:'"학교"는 팔아도 "처벌"은 없다… 13년째 구멍 난 사립학교법',link:'https://n.news.naver.com/mnews/article/657/0000051128?sid=102',desc:'사립학교법 개정에 13년째 방치. 한국복지사이버대학교 비리 사례. 법 개정 시급.',pubDate:'2026-05-05',kw:['사립학교법','비리','처벌'],r:'yeongnam'},
+
+  // ═══ 법인 책무성: 사립학교법 ═══
+  {sub:'law',title:'대학의 불법한 교수채용비리 사라져야',link:'http://www.dynews.co.kr/news/articleView.html?idxno=850690',desc:'2025년 9월 사립학교 교원 임용 부정행위 시 임용취소 가능 개정사립학교법 시행.',pubDate:'2026-05-17',kw:['사립학교법','개정','채용비리'],r:'chungcheong'},
+  {sub:'law',title:'강경숙 "사립대학 교비횡령·전용실태… 반교육적 관행"',link:'http://www.lawissue.co.kr/view.php?ud=20260409112040613492eef753eb_12',desc:'사립학교법 일부개정안 처리, 교비 전용 실태 조사, 비리사학 엄중처벌 요구.',pubDate:'2026-04-09',kw:['사립학교법','개정','교비'],r:'national'},
+  {sub:'law',title:'교수 40.9% "서울대 10개, 비거점대 더 어렵게 만든다"',link:'https://www.kyosu.net/news/articleView.html?idxno=203312',desc:'사립학교법 전면 개정 필요성 지적. 교육개혁이 가장 미흡했다는 평가.',pubDate:'2026-04-13',kw:['사립학교법','개정','구조'],r:'national'},
+
+  // ═══ 지속가능성: 학령인구 대응 ═══
+  {sub:'demography',title:'대한민국 사립대학의 장래 (5)',link:'https://www.m-economynews.com/news/article.html?no=67241',desc:'학령인구 감소에 대비한 과감한 구조개선. 수도권-비수도권 격차에 따른 고등교육 혁신.',pubDate:'2026-05-22',kw:['학령인구','구조개선','사립대'],r:'national'},
+  {sub:'demography',title:'日, 사립대 40% 줄인다… 저출산 "대학 붕괴" 경고',link:'https://www.asiatoday.co.kr/kn/view.php?key=20260430010009881',desc:'일본 2040년까지 250개교·정원 14만명 감축. 대학 구조조정은 국가 인구전략 문제.',pubDate:'2026-04-30',kw:['학령인구','일본','구조조정'],r:'national'},
+  {sub:'demography',title:'"5극 3특" 실현을 위한 지방대학 발전 방안',link:'https://www.m-economynews.com/news/article.html?no=66488',desc:'학령인구 수도권 집중으로 특정 지역 집중 타격. 지방대 소멸 위기 가속화.',pubDate:'2026-04-16',kw:['학령인구','지방대','소멸'],r:'national'},
+
+  // ═══ 지속가능성: 구조개혁·구조개선법 ═══
+  {sub:'reform',title:'"사립대학은 고등교육의 모세혈관"… 상생 해법은?',link:'http://news.ebs.co.kr/ebsnews/allView/60726012/N',desc:'8월 사립대학 구조개선법 시행 예정. "회생을 돕는 법"이 아닌 "폐교 정리 법"이 될 우려.',pubDate:'2026-05-19',kw:['구조개선법','폐교','사립대'],r:'national'},
+  {sub:'reform',title:'7개 신학대 생존 지원에 무게… 통폐합 기준 연구는 아직',link:'http://www.pckworld.com/article.php?aid=11093360678',desc:'8월 15일 사립대학구조개선법 시행으로 사립대 구조조정 본격화 전망.',pubDate:'2026-05-18',kw:['구조개선법','통폐합','구조조정'],r:'national'},
+  {sub:'reform',title:'문 닫는 대학, 질서 있는 퇴장 돕되 비리는 끝까지 환수',link:'https://n.news.naver.com/mnews/article/014/0005503012?sid=102',desc:'구조개선법 시행 준비. 통폐합 시 교원 확보율 70% 이상으로 완화. 폐교 대학 구성원 보호.',pubDate:'2026-04-06',kw:['구조개선법','통폐합','폐교'],r:'national'},
+  {sub:'reform',title:'2040년까지 250개 부실대학 폐교 선언한 일본 정부',link:'https://www.news2day.co.kr/article/20260505500004',desc:'일본 사립대학 통폐합·정원 삭감 본격화. 2025년 기준 일본 사립대학 53% 정원 미달.',pubDate:'2026-05-05',kw:['폐교','통폐합','일본'],r:'national'},
+
+  // ═══ 지속가능성: 지역연계·생존전략 ═══
+  {sub:'regional',title:'사립대 총장 65.5% "서울대 10개 만들기 도움 안 돼"',link:'http://www.metroseoul.co.kr/article/20260520500166',desc:'지역소멸과 지역사립대 발전 효과 부정적 평가. AI 교육과정 개발 95.4% 생존 전략 재편.',pubDate:'2026-05-20',kw:['지역사립대','생존전략','AI'],r:'national'},
+  {sub:'regional',title:'사총협, 사립대 글로벌 경쟁력 제고 - 사회적 가치 논의',link:'https://n.news.naver.com/mnews/article/030/0003427548?sid=102',desc:'균형발전과 지역 사립대학 역할. "AI 에이전트 시대, 대학 교육의 대전환과 생존 전략" 공유.',pubDate:'2026-05-14',kw:['지역사립대','생존전략','AI'],r:'national'},
+  {sub:'regional',title:'수도권 집중·대학 서열화 고착… 지역대학 체제 개편 필요',link:'https://n.news.naver.com/mnews/article/654/0000175945?sid=102',desc:'정부 5극 3특 국가균형성장전략에 맞춰 지역 사립대별 생존 전략 모색.',pubDate:'2026-04-16',kw:['지역대학','생존전략','균형발전'],r:'gangwon_jeju'},
+
+  // ═══ 지속가능성: AI·디지털 전환 ═══
+  {sub:'ai_digital',title:'호서대, "K 올트먼·머스크" 키운다… AI 수업하고 투자자 연결',link:'https://n.news.naver.com/mnews/article/015/0005291856?sid=102',desc:'AI가 산업과 교육을 바꾸면서 대학 AI 전환 경쟁 본격화. 호서대 2019년 사립대 최초 AI 특화.',pubDate:'2026-05-27',kw:['AI','디지털전환','호서대'],r:'chungcheong'},
+  {sub:'ai_digital',title:'이경희 대교협 사무총장 - AI·디지털 전환 시대 대학 교육',link:'https://news.unn.net/news/articleView.html?idxno=592513',desc:'AI·디지털 전환 시대에 대학 혁신과 변화 절실. 8월 구조개선법 시행과 교육 패러다임 전환.',pubDate:'2026-05-17',kw:['AI','디지털전환','구조개선법'],r:'national'},
+  {sub:'ai_digital',title:'서울여대 - 국내 최초 클라우드 기반 AI 통합 플랫폼 구축',link:'https://www.businesspost.co.kr/BP?command=article_view&num=436769',desc:'서울여자대학교 국내 대학 최초 클라우드 기반 지능형 데이터 통합 분석 플랫폼.',pubDate:'2026-04-30',kw:['AI','클라우드','디지털전환'],r:'capital'},
+  {sub:'ai_digital',title:'연기만 피운 "서울대 10개"… 이재명 정부 1년, 대학 생태계 불만',link:'https://www.kyosu.net/news/articleView.html?idxno=206127',desc:'AI·디지털 분야 중심으로 대학과 산업 경계를 허무는 데 집중. AI·AX 부트캠프 4200명.',pubDate:'2026-05-21',kw:['AI','디지털전환','대학혁신'],r:'national'},
+];
+
+let allNews = NEWS.map(n => {
+  const src = getSource(n.link);
+  return {...n, title:clean(n.title), source:src, perspective:getPersp(src),
+    region:n.r||'national', summary:summary(n.desc), dateObj:new Date(n.pubDate),
+    major:SUB_CATS[n.sub]?.major||'sustain'};
+});
+
+let activeMajor='all', activeSub='all', activePersp='all', activeRegion='all';
+
+// Date presets
+document.getElementById('datePresets').addEventListener('click',e=>{
+  const btn=e.target.closest('.preset-btn');if(!btn)return;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const months=parseInt(btn.dataset.months);
+  const to=new Date('2026-06-01');
+  const from=new Date(to);from.setMonth(from.getMonth()-months);
+  document.getElementById('dateFrom').value=from.toISOString().split('T')[0];
+  document.getElementById('dateTo').value=to.toISOString().split('T')[0];
+  render();
+});
+// Manual date change clears preset active
+['dateFrom','dateTo'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',()=>{
+    document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+    render();
+  });
+});
+
+// Perspective filter
+document.getElementById('perspFilter').addEventListener('click',e=>{
+  const pill=e.target.closest('.pill');if(!pill)return;
+  activePersp=pill.dataset.v;
+  document.querySelectorAll('#perspFilter .pill').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+  render();
+});
+// Region filter
+document.getElementById('regionFilter').addEventListener('click',e=>{
+  const pill=e.target.closest('.pill');if(!pill)return;
+  activeRegion=pill.dataset.v;
+  document.querySelectorAll('#regionFilter .pill').forEach(p=>p.classList.remove('active'));
+  pill.classList.add('active');
+  render();
+});
+
+function renderMajorTypes(){
+  const el=document.getElementById('majorTypes');
+  const f=preFilter();
+  const counts={all:f.length};
+  MAJOR_TYPES.forEach(mt=>{if(mt.id!=='all')counts[mt.id]=f.filter(n=>n.major===mt.id).length;});
+  el.innerHTML=MAJOR_TYPES.map(mt=>`<button class="major-btn ${activeMajor===mt.id?'active':''}" data-id="${mt.id}">${mt.label}<span class="cnt">${counts[mt.id]||0}</span></button>`).join('');
+  el.querySelectorAll('.major-btn').forEach(b=>b.addEventListener('click',()=>{activeMajor=b.dataset.id;activeSub='all';render();}));
+}
+
+function renderSubCats(){
+  const el=document.getElementById('subCategories');
+  let subs;
+  if(activeMajor==='all') subs=Object.entries(SUB_CATS);
+  else{const mt=MAJOR_TYPES.find(m=>m.id===activeMajor);subs=mt?.subs?mt.subs.map(s=>[s,SUB_CATS[s]]):[];}
+  const f=preFilter();
+  const counts={};subs.forEach(([id])=>{counts[id]=f.filter(n=>n.sub===id).length;});
+  el.innerHTML=`<button class="sub-btn ${activeSub==='all'?'active':''}" data-id="all">전체</button>`+subs.map(([id,cat])=>`<button class="sub-btn ${activeSub===id?'active':''}" data-id="${id}">${cat.label} (${counts[id]||0})</button>`).join('');
+  el.querySelectorAll('.sub-btn').forEach(b=>b.addEventListener('click',()=>{activeSub=b.dataset.id;render();}));
+}
+
+function preFilter(){
+  const from=new Date(document.getElementById('dateFrom').value);
+  const to=new Date(document.getElementById('dateTo').value);to.setHours(23,59,59);
+  const q=document.getElementById('searchInput').value.trim().toLowerCase();
+  return allNews.filter(n=>{
+    if(activePersp!=='all'&&n.perspective!==activePersp)return false;
+    if(activeRegion!=='all'&&n.region!==activeRegion)return false;
+    if(n.dateObj<from||n.dateObj>to)return false;
+    if(q&&!(n.title.toLowerCase().includes(q)||n.desc.toLowerCase().includes(q)||n.source.toLowerCase().includes(q)))return false;
+    return true;
+  });
+}
+
+function getFiltered(){
+  let f=preFilter();
+  if(activeMajor!=='all')f=f.filter(n=>n.major===activeMajor);
+  if(activeSub!=='all')f=f.filter(n=>n.sub===activeSub);
+  const sort=document.getElementById('sortBy').value;
+  f.sort((a,b)=>sort==='date-desc'?b.dateObj-a.dateObj:a.dateObj-b.dateObj);
+  return f;
+}
+
+function renderStats(f){
+  const pc={};f.forEach(n=>{pc[n.perspective]=(pc[n.perspective]||0)+1;});
+  const rc={};f.forEach(n=>{rc[n.region]=(rc[n.region]||0)+1;});
+  const srcs=new Set(f.map(n=>n.source));
+  const latest=f.length?f.reduce((a,b)=>a.dateObj>b.dateObj?a:b):null;
+  const topReg=Object.entries(rc).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('statsBar').innerHTML=`
+    <div class="stat-card"><div class="sl">표시 뉴스</div><div class="sv">${f.length}</div></div>
+    <div class="stat-card"><div class="sl">진보/중도/보수</div><div class="sv sm">${pc.progressive||0} / ${pc.moderate||0} / ${pc.conservative||0}</div></div>
+    <div class="stat-card"><div class="sl">최다 지역</div><div class="sv sm">${topReg?REGION_LABELS[topReg[0]]||topReg[0]:'-'}</div></div>
+    <div class="stat-card"><div class="sl">언론사</div><div class="sv">${srcs.size}</div></div>
+    <div class="stat-card"><div class="sl">최신</div><div class="sv sm">${latest?latest.dateObj.toLocaleDateString('ko-KR'):'-'}</div></div>
+  `;
+  document.getElementById('totalCount').textContent=`전체 ${allNews.length}건`;
+}
+
+function renderNews(f){
+  const grid=document.getElementById('newsGrid');
+  if(!f.length){grid.innerHTML=`<div class="empty-state"><div class="icon">&#128270;</div><p>해당 조건에 맞는 뉴스가 없습니다.</p></div>`;return;}
+  grid.innerHTML=f.map(n=>{
+    const mt=MAJOR_TYPES.find(m=>m.id===n.major);
+    const sc=SUB_CATS[n.sub];
+    const d=n.dateObj.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'});
+    const pCls=`persp-${n.perspective}`;
+    return `<div class="news-card">
+      <div class="card-header">
+        <div class="badges">
+          <span class="major-badge ${mt?.cssClass||''}">${mt?.label||''}</span>
+          <span class="sub-badge">${sc?.label||''}</span>
+          <span class="persp-badge ${pCls}">${PERSP_LABELS[n.perspective]||''}</span>
+          <span class="region-badge">${REGION_LABELS[n.region]||'전국'}</span>
+        </div>
+        <span class="date">${d}</span>
+      </div>
+      <div class="title"><a href="${n.link}" target="_blank" rel="noopener">${n.title}</a></div>
+      <div class="summary">${n.summary}</div>
+      <div class="card-footer">
+        <span class="source-tag">${n.source}</span>
+        ${(n.kw||[]).map(k=>`<span class="keyword-tag">${k}</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function render(){renderMajorTypes();renderSubCats();const f=getFiltered();renderStats(f);renderNews(f);}
+document.getElementById('sortBy').addEventListener('change',render);
+document.getElementById('searchInput').addEventListener('input',render);
+render();
+</script>
+</body>
+</html>
