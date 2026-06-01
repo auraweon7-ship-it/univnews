@@ -101,6 +101,16 @@
   .source-tag{font-size:0.68rem;background:var(--source-bg);color:var(--source-text);padding:0.12rem 0.45rem;border-radius:4px;font-weight:600;}
   .keyword-tag{font-size:0.66rem;background:var(--tag-bg);color:var(--tag-text);padding:0.12rem 0.45rem;border-radius:4px;}
 
+  /* URL Section */
+  .card-urls{padding:0.5rem 1.1rem 0.7rem;border-top:1px solid rgba(45,49,72,0.5);display:flex;flex-direction:column;gap:0.4rem;}
+  .url-row{display:flex;align-items:flex-start;gap:0.4rem;font-size:0.7rem;line-height:1.4;}
+  .url-label{flex-shrink:0;font-weight:700;color:var(--text-dim);white-space:nowrap;}
+  .url-value{word-break:break-all;color:#64748b;font-family:'Consolas','Monaco',monospace;font-size:0.65rem;}
+  .url-value a{color:#64748b;text-decoration:none;transition:color 0.15s;}
+  .url-value a:hover{color:var(--accent2);text-decoration:underline;}
+  .url-copy{flex-shrink:0;background:rgba(108,92,231,0.15);border:1px solid rgba(108,92,231,0.3);color:var(--accent2);padding:0.1rem 0.4rem;border-radius:4px;cursor:pointer;font-size:0.62rem;font-weight:600;transition:all 0.15s;}
+  .url-copy:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+
   .mt-fiscal{background:#dc262620;color:#fca5a5;border:1px solid #dc262640;}
   .mt-invest{background:#06b6d420;color:#67e8f9;border:1px solid #06b6d440;}
   .mt-student{background:#10b98120;color:#6ee7b7;border:1px solid #10b98140;}
@@ -380,11 +390,51 @@ const NEWS = [
   {sub:'ai_digital',title:'🎓 연기만 피운 "서울대 10개"… 이재명 정부 1년, 대학 생태계 불만',link:'https://www.kyosu.net/news/articleView.html?idxno=206127',desc:'이재명 정부가 AI·디지털 분야를 중심으로 대학과 산업 간 경계를 허무는 데 집중했다. AI·AX 부트캠프를 통해 4200명을 양성했으나 지역 사립대 총장들은 "재하청 처지"라며 불만을 표했다.',pubDate:'2026-05-21',kw:['AI','디지털전환','대학혁신'],r:'national'},
 ];
 
+// 표지이미지 URL 맵핑 (수집 가능한 og:image)
+const OG_IMAGES = {
+  'news.unn.net/592522':'https://cdn.news.unn.net/news/photo/202605/592522_415722_2945.jpg',
+  'news.unn.net/592621':'https://cdn.news.unn.net/news/photo/202605/592621_415906_4125.jpg',
+  'news.unn.net/592880':'https://cdn.news.unn.net/news/photo/202605/592880_416304_5351.jpg',
+  'news.unn.net/592896':'https://cdn.news.unn.net/news/photo/202605/592896_416326_5438.jpg',
+  'news.unn.net/590668':'https://cdn.news.unn.net/news/photo/202603/590668_413041_4721.jpg',
+  'news.unn.net/592919':'https://cdn.news.unn.net/news/photo/202605/592919_416370_3516.jpg',
+  'news.unn.net/592665':'https://cdn.news.unn.net/news/photo/202605/592665_416016_3219.jpg',
+  'news.unn.net/581552':'https://cdn.news.unn.net/news/photo/202507/581552_406228_4413.jpg',
+  'news.unn.net/592513':'https://cdn.news.unn.net/news/photo/202605/592513_415695_1357.jpg',
+  'news.unn.net/592412':'https://cdn.news.unn.net/news/photo/202605/592412_415554_1827.jpg',
+  'job-post.co.kr/216955':'https://cdn.job-post.co.kr/news/photo/202605/216955_318523_120.png',
+  'gjdream.com/667293':'https://cdn.gjdream.com/news/photo/202602/667293_280409_2130.jpg',
+  'ksilbo.co.kr/1051522':'https://cdn.ksilbo.co.kr/news/photo/202603/1051522_632384_5324.jpg',
+  'm-economynews.com/67241':'https://www.m-economynews.com/data/photos/20260521/art_17794082513329_e68c52.jpg',
+  'kbmaeil.com/20260302':'https://umq1gm7a8386.edge.naverncp.com/data2/content/image/2026/03/02/.cache/512/20260302500433.jpg',
+  'pckworld.com/11093360678':'https://www.pckworld.com/upimages/gisaimg/202605/18_110933.jpg',
+  'metroseoul.co.kr/20260520':'https://cdn.emetro.co.kr/data2/content/image/2026/05/20/.cache/512/20260520500167.jpg',
+  'dkilbo.com/545280':'https://cdn.dkilbo.com/news/photo/202605/545280_357891_2718.jpg',
+  'kyosu.net/206127':'https://cdn.kyosu.net/news/photo/202605/206127_73285_3612.jpg',
+  'kyosu.net/153223':'https://cdn.kyosu.net/news/photo/202512/153223_69485_4537.jpg',
+  'kyosu.net/203312':'https://cdn.kyosu.net/news/photo/202604/203312_72021_1538.jpg',
+  'businesspost.co.kr/436769':'https://www.businesspost.co.kr/news/photo/202604/436769_1.jpg',
+  'businesspost.co.kr/427194':'https://www.businesspost.co.kr/news/photo/202601/427194_1.jpg',
+  'businesspost.co.kr/428091':'https://www.businesspost.co.kr/news/photo/202601/428091_1.jpg',
+  'businesspost.co.kr/423694':'https://www.businesspost.co.kr/news/photo/202512/423694_1.jpg',
+  'businesspost.co.kr/423850':'https://www.businesspost.co.kr/news/photo/202512/423850_1.jpg',
+  'news2day.co.kr/20260505':'https://www.news2day.co.kr/data/photos/20260518/art_17781603822544.jpg',
+  'asiatoday.co.kr/20260430':'https://img.asiatoday.co.kr/kn/file/20260430010009881.jpg',
+  'kjdaily.com':'https://cdn.kjdaily.com/news/photo/202603/1772619_img.jpg',
+  'gndomin.com/438594':'https://cdn.gndomin.com/news/photo/202506/438594_261437_4155.jpg',
+};
+function findOg(link){
+  for(const[k,v] of Object.entries(OG_IMAGES)){
+    if(link.includes(k)) return v;
+  }
+  return '';
+}
+
 let allNews = NEWS.map(n => {
   const src = getSource(n.link);
   return {...n, title:clean(n.title), source:src, perspective:getPersp(src),
     region:n.r||'national', summary:summary(n.desc), dateObj:new Date(n.pubDate),
-    major:SUB_CATS[n.sub]?.major||'sustain'};
+    major:SUB_CATS[n.sub]?.major||'sustain', og:n.og||findOg(n.link)};
 });
 
 let activeMajor='all', activeSub='all', activePersp='all', activeRegion='all';
@@ -507,6 +557,18 @@ function renderNews(f){
       <div class="card-footer">
         <span class="source-tag">${n.source}</span>
         ${(n.kw||[]).map(k=>`<span class="keyword-tag">${k}</span>`).join('')}
+      </div>
+      <div class="card-urls">
+        <div class="url-row">
+          <span class="url-label">📷 표지이미지</span>
+          <span class="url-value"><a href="${n.og||n.link}" target="_blank" rel="noopener">${n.og||'(기사 내 이미지 참조)'}</a></span>
+          ${n.og?`<button class="url-copy" onclick="navigator.clipboard.writeText('${n.og}')">복사</button>`:''}
+        </div>
+        <div class="url-row">
+          <span class="url-label">🔗 출처 URL</span>
+          <span class="url-value"><a href="${n.link}" target="_blank" rel="noopener">${n.link}</a></span>
+          <button class="url-copy" onclick="navigator.clipboard.writeText('${n.link}')">복사</button>
+        </div>
       </div>
     </div>`;
   }).join('');
