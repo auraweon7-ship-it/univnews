@@ -215,14 +215,14 @@
 <div class="controls">
   <div class="control-group">
     <label>기간</label>
-    <input type="date" id="dateFrom" class="ctrl-input" value="2026-01-01">
+    <input type="date" id="dateFrom" class="ctrl-input">
     <span class="sep">~</span>
-    <input type="date" id="dateTo" class="ctrl-input" value="2026-06-01">
+    <input type="date" id="dateTo" class="ctrl-input">
     <div class="date-presets" id="datePresets">
-      <button class="preset-btn" data-months="1">1개월</button>
+      <button class="preset-btn active" data-months="0">이번 달</button>
       <button class="preset-btn" data-months="3">3개월</button>
       <button class="preset-btn" data-months="6">6개월</button>
-      <button class="preset-btn active" data-months="12">올해 전체</button>
+      <button class="preset-btn" data-months="12">올해 전체</button>
     </div>
   </div>
   <div class="control-group">
@@ -561,8 +561,15 @@ document.getElementById('datePresets').addEventListener('click',e=>{
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   const months=parseInt(btn.dataset.months);
-  const to=new Date('2026-06-01');
-  const from=new Date(to);from.setMonth(from.getMonth()-months);
+  const now=new Date();
+  let from,to;
+  if(months===0){
+    from=new Date(now.getFullYear(),now.getMonth(),1);
+    to=new Date(now.getFullYear(),now.getMonth()+1,0);
+  } else {
+    to=new Date(now.getFullYear(),now.getMonth()+1,0);
+    from=new Date(to);from.setMonth(from.getMonth()-months+1);from.setDate(1);
+  }
   document.getElementById('dateFrom').value=from.toISOString().split('T')[0];
   document.getElementById('dateTo').value=to.toISOString().split('T')[0];
   render();
@@ -836,6 +843,16 @@ async function fetchAIInsight(){
     document.getElementById('aiLoading').innerHTML='⚠️ AI 분석 로드 실패: '+e.message;
   }
 }
+
+// 기간 초기값: 실행하는 월의 1일~말일
+(function initDates(){
+  const now=new Date();
+  const y=now.getFullYear(), m=now.getMonth();
+  const first=new Date(y,m,1);
+  const last=new Date(y,m+1,0);
+  document.getElementById('dateFrom').value=first.toISOString().split('T')[0];
+  document.getElementById('dateTo').value=last.toISOString().split('T')[0];
+})();
 
 render();
 updateApiKeyBtn();
