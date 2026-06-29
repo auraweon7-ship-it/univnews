@@ -157,20 +157,20 @@
   @media(max-width:768px){.charts-grid{grid-template-columns:1fr;}}
 
   /* Footer */
-  .site-footer{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-top:1px solid var(--border);padding:2rem 2rem 1.5rem;margin-top:1rem;}
-  .footer-inner{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:2rem;justify-content:space-between;align-items:flex-start;}
-  .footer-profile{flex:1;min-width:260px;}
-  .footer-name{font-size:1.1rem;font-weight:800;color:var(--text);margin-bottom:0.3rem;}
-  .footer-name-sub{font-size:0.85rem;color:var(--text-dim);margin-bottom:0.6rem;}
-  .footer-affil{font-size:0.82rem;color:var(--text-dim);line-height:1.7;}
+  .site-footer{background:linear-gradient(135deg,#1a1040 0%,#0f1117 100%);border-top:1px solid var(--border);padding:1.5rem 2rem 1rem;margin-top:1rem;}
+  .footer-row1{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:1.2rem;}
+  .footer-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--accent);flex-shrink:0;}
+  .footer-info{flex:1;display:flex;flex-wrap:wrap;align-items:baseline;gap:0.3rem 1.2rem;}
+  .footer-name{font-size:1rem;font-weight:800;color:var(--text);white-space:nowrap;}
+  .footer-role{font-size:0.8rem;color:var(--text-dim);}
+  .footer-affil{font-size:0.78rem;color:var(--text-dim);line-height:1.5;}
   .footer-affil a{color:var(--accent2);text-decoration:none;font-weight:600;}
   .footer-affil a:hover{text-decoration:underline;}
-  .footer-links{flex:0 0 auto;display:flex;flex-direction:column;gap:0.5rem;align-items:flex-end;}
-  .footer-link-item{display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:var(--text-dim);}
-  .footer-link-item a{color:var(--accent2);text-decoration:none;font-weight:600;padding:0.25rem 0.7rem;border:1px solid var(--border);border-radius:6px;transition:all 0.2s;}
+  .footer-links{display:flex;gap:0.5rem;flex-shrink:0;}
+  .footer-link-item a{color:var(--accent2);text-decoration:none;font-weight:600;font-size:0.78rem;padding:0.2rem 0.6rem;border:1px solid var(--border);border-radius:6px;transition:all 0.2s;}
   .footer-link-item a:hover{border-color:var(--accent);background:rgba(108,92,231,0.15);}
-  .footer-copy{width:100%;text-align:center;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.72rem;color:var(--text-dim);}
-  @media(max-width:768px){.footer-inner{flex-direction:column;align-items:center;text-align:center;}.footer-links{align-items:center;}}
+  .footer-copy{max-width:900px;margin:0.8rem auto 0;text-align:center;padding-top:0.8rem;border-top:1px solid var(--border);font-size:0.7rem;color:var(--text-dim);}
+  @media(max-width:768px){.footer-row1{flex-direction:column;text-align:center;}.footer-info{justify-content:center;}.footer-links{justify-content:center;}}
 
   @media(max-width:768px){
     .header{padding:1.5rem 1rem 1rem;}.header h1{font-size:1.3rem;}
@@ -312,22 +312,19 @@
 <div class="news-grid" id="newsGrid"></div>
 
 <footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-profile">
-      <img src="profile.jpg" alt="박정원 교수" style="width:80px;height:80px;border-radius:50%;object-fit:cover;object-position:center top;border:2px solid var(--accent);margin-bottom:10px;">
-      <div class="footer-name">박정원 | 朴正元 | Park Jeong Weon</div>
-      <div class="footer-name-sub">교수</div>
-      <div class="footer-affil">
-        한국외국어대학교 중국학대학 중국언어문화학부<br>
-        <a href="https://k-ai.it.kr/" target="_blank" rel="noopener">K-AI 교육네트워크</a>
-      </div>
+  <div class="footer-row1">
+    <img src="profile.jpg" alt="박정원 교수" class="footer-photo">
+    <div class="footer-info">
+      <span class="footer-name">박정원 | 朴正元 | Park Jeong Weon</span>
+      <span class="footer-role">교수</span>
+      <span class="footer-affil">한국외국어대학교 중국학대학 중국언어문화학부 · <a href="https://k-ai.it.kr/" target="_blank" rel="noopener">K-AI 교육네트워크</a></span>
     </div>
     <div class="footer-links">
-      <div class="footer-link-item">APP <a href="https://kletter.kr" target="_blank" rel="noopener">kletter.kr</a></div>
-      <div class="footer-link-item">APP <a href="https://kteacher.kr" target="_blank" rel="noopener">kteacher.kr</a></div>
+      <div class="footer-link-item"><a href="https://kletter.kr" target="_blank" rel="noopener">kletter.kr</a></div>
+      <div class="footer-link-item"><a href="https://kteacher.kr" target="_blank" rel="noopener">kteacher.kr</a></div>
     </div>
-    <div class="footer-copy">&copy; 2026 Park Jeong Weon. All rights reserved.</div>
   </div>
+  <div class="footer-copy">&copy; 2026 Park Jeong Weon. All rights reserved.</div>
 </footer>
 
 <script>
