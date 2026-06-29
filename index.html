@@ -888,7 +888,7 @@ async function fetchLiveNews(clientId,clientSecret){
     const batch=subs.slice(i,i+4);
     const promises=batch.map(sub=>{
       const q=SEARCH_QUERIES[sub];
-      return fetch(`/api/news?query=${encodeURIComponent(q)}&display=5&sort=date`,{
+      return fetch(`/api/news?query=${encodeURIComponent(q)}&display=10&sort=date`,{
         headers:{'X-Naver-Client-Id':clientId,'X-Naver-Client-Secret':clientSecret}
       }).then(r=>{
         if(!r.ok) return r.text().then(t=>{lastError=`HTTP ${r.status}: ${t}`;return null;});
