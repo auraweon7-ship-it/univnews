@@ -189,7 +189,7 @@
       <div class="subtitle">5대 유형 + 관점 + 지역별 사립대 이슈 모니터링</div>
     </div>
     <div class="meta-info">
-      <span>갱신: 2026-06-01</span>
+      <span id="updateDate">갱신: 2026-06-01</span>
       <span id="totalCount">전체 0건</span>
       <button id="apiKeyBtn" onclick="toggleApiKeyModal()" style="background:var(--accent);border:none;color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:0.3rem;">
         <span id="apiKeyIcon">🔑</span> <span id="apiKeyLabel">API 키 설정</span>
@@ -224,6 +224,7 @@
       <button class="preset-btn" data-months="6">6개월</button>
       <button class="preset-btn" data-months="12">올해 전체</button>
     </div>
+    <button id="liveSearchBtn" class="preset-btn" style="background:#e67e22;color:#fff;font-weight:700;margin-left:8px;padding:4px 14px;" onclick="triggerLiveSearch()">🔍 실시간 검색</button>
   </div>
   <div class="control-group">
     <label>정렬</label>
@@ -284,6 +285,32 @@
   <div class="ai-insight-title">🧠 AI 종합 분석 인사이트</div>
   <div class="ai-insight-loading" id="aiLoading"><span class="spinner"></span>Claude AI 분석 중...</div>
   <div class="ai-insight-body" id="aiBody" style="display:none;"></div>
+</div>
+
+<!-- Naver API Key Modal -->
+<div id="naverKeyModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#1e1e2e;border-radius:12px;padding:28px;width:420px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,.4);">
+    <h3 style="margin:0 0 16px;color:#e67e22;">🔍 네이버 뉴스 API 설정</h3>
+    <p style="color:#aaa;font-size:13px;margin:0 0 12px;">실시간 뉴스 검색에 필요한 네이버 개발자 API 키를 입력하세요.<br><a href="https://developers.naver.com/apps/" target="_blank" style="color:#60a5fa;">developers.naver.com</a>에서 발급 가능합니다.</p>
+    <label style="color:#ccc;font-size:13px;">Client ID</label>
+    <input id="naverClientId" type="text" placeholder="Client ID" style="width:100%;padding:8px 10px;margin:4px 0 10px;background:#2a2a3e;border:1px solid #444;border-radius:6px;color:#fff;font-size:14px;box-sizing:border-box;">
+    <label style="color:#ccc;font-size:13px;">Client Secret</label>
+    <input id="naverClientSecret" type="password" placeholder="Client Secret" style="width:100%;padding:8px 10px;margin:4px 0 16px;background:#2a2a3e;border:1px solid #444;border-radius:6px;color:#fff;font-size:14px;box-sizing:border-box;">
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+      <button onclick="clearNaverKey()" style="padding:8px 16px;background:#555;color:#fff;border:none;border-radius:6px;cursor:pointer;">초기화</button>
+      <button onclick="toggleNaverKeyModal()" style="padding:8px 16px;background:#666;color:#fff;border:none;border-radius:6px;cursor:pointer;">취소</button>
+      <button onclick="saveNaverKey()" style="padding:8px 16px;background:#e67e22;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:700;">저장 후 검색</button>
+    </div>
+  </div>
+</div>
+
+<!-- Live Search Loading Overlay -->
+<div id="liveSearchOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;">
+  <div style="background:#1e1e2e;border-radius:12px;padding:32px 40px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4);">
+    <div class="spinner" style="margin:0 auto 16px;"></div>
+    <div id="liveSearchStatus" style="color:#e67e22;font-size:16px;font-weight:700;">뉴스 검색 중...</div>
+    <div id="liveSearchProgress" style="color:#aaa;font-size:13px;margin-top:8px;">0 / 20 카테고리</div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -350,6 +377,49 @@ const SRC_PERSP = {
   conservative:['한국경제','세계일보','월간조선','서울경제','중앙일보','매일신문','조선일보','동아일보'],
   moderate:['연합뉴스','교수신문','한국대학신문','비즈니스포스트','뉴스1','파이낸셜뉴스','이데일리','뉴스투데이','서울신문','전자신문','에듀동아','농민신문','지디넷','대한경제','아시아투데이','아시아타임즈','EBN','가톨릭평화방송','더스쿱','노컷뉴스','잡포스트','대구일보','디지털타임스','한국일보','뉴스워커','메트로','광주드림','동양일보','광주매일','경북매일','경상일보','경남매일','경남뉴스','경남도민','이뉴스투데이','충북일보','전남일보','강원도민일보','매경이코노미','기독공보','대구MBC','안동MBC','포항MBC']
 };
+
+// 하위분류별 네이버 뉴스 검색 쿼리
+const SEARCH_QUERIES = {
+  tuition:'사립대학 등록금 인상',
+  fund_transfer:'사립대학 법인전입금 재정',
+  reserve:'사립대학 적립금 이월금',
+  debt:'사립대학 부채 재정위기',
+  edu_cost:'대학 학생1인당 교육비 사립',
+  edu_return:'사립대학 교육비환원율',
+  scholarship:'사립대학 장학금 지원',
+  faculty:'대학 교원확보율 전임교원',
+  enrollment:'사립대학 충원율 신입생 모집',
+  dropout:'대학 중도탈락률 자퇴',
+  employment:'대학 취업률 사립대',
+  intl_student:'외국인 유학생 사립대학 유치',
+  governance:'사립대학 이사회 수익용기본재산',
+  audit:'대학 감사 정보공시 대학알리미',
+  corruption:'사립대학 교비횡령 비리',
+  law:'사립학교법 개정',
+  demography:'학령인구 감소 대학 위기',
+  reform:'사립대학 구조개선법 구조개혁',
+  regional:'지방대학 지역연계 생존전략 사립',
+  ai_digital:'대학 AI 디지털전환 사립대',
+};
+const SUB_EMOJIS = {tuition:'💳',fund_transfer:'🏢',reserve:'📊',debt:'🏦',edu_cost:'🎯',edu_return:'📊',scholarship:'🎁',faculty:'👨‍🏫',enrollment:'📈',dropout:'🚪',employment:'💼',intl_student:'🌍',governance:'⚖️',audit:'🔍',corruption:'🚨',law:'📜',demography:'👶',reform:'🔧',regional:'🗺️',ai_digital:'🤖'};
+
+const REGION_KW = {
+  capital:['서울','경기','인천','수도권','연세대','고려대','서강대','성균관','한양대','이화여대','숙명','덕성','서울여대','국민대','숭실','건국','동국','홍익','세종대','광운','상명','한성','서울시립','가천','아주','경희','한국외대','중앙대','단국','신구대','한양여대'],
+  chungcheong:['대전','충북','충남','세종','충청','호서대','건양대','한남대','공주','충북대','한밭대','목원대','배재대','중부대','청주','충주','천안','아산'],
+  honam:['광주','전북','전남','전주','목포','순천','군산','전북대','조선대','전남대','원광대','호남','익산'],
+  yeongnam:['부산','대구','울산','경북','경남','포항','창원','김해','영남대','경북대','부산대','동아대','동의대','인제대','계명','영남','창신대','울산과학대','대구가톨릭대','신라대','경남정보대','경상'],
+  gangwon_jeju:['강원','제주','춘천','원주','강릉','속초','서귀포','한라','강원대'],
+};
+
+function detectRegion(title, desc, link) {
+  const text = (title + ' ' + desc + ' ' + link).toLowerCase();
+  for (const [region, keywords] of Object.entries(REGION_KW)) {
+    for (const kw of keywords) {
+      if (text.includes(kw.toLowerCase())) return region;
+    }
+  }
+  return 'national';
+}
 
 function clean(s){return s.replace(/<\/?b>/g,'').replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');}
 function getSource(link){
@@ -791,6 +861,113 @@ function updateApiKeyBtn(){
   const has=!!localStorage.getItem('claude_api_key');
   document.getElementById('apiKeyIcon').textContent=has?'✅':'🔑';
   document.getElementById('apiKeyLabel').textContent=has?'API 키 변경':'API 키 설정';
+}
+
+// ═══ Naver API Key Management ═══
+function toggleNaverKeyModal(){
+  const m=document.getElementById('naverKeyModal');
+  const show=m.style.display!=='flex';
+  m.style.display=show?'flex':'none';
+  if(show){
+    document.getElementById('naverClientId').value=localStorage.getItem('naver_client_id')||'';
+    document.getElementById('naverClientSecret').value=localStorage.getItem('naver_client_secret')||'';
+    document.getElementById('naverClientId').focus();
+  }
+}
+function saveNaverKey(){
+  const id=document.getElementById('naverClientId').value.trim();
+  const secret=document.getElementById('naverClientSecret').value.trim();
+  if(!id||!secret){alert('Client ID와 Client Secret을 모두 입력하세요.');return;}
+  localStorage.setItem('naver_client_id',id);
+  localStorage.setItem('naver_client_secret',secret);
+  toggleNaverKeyModal();
+  triggerLiveSearch();
+}
+function clearNaverKey(){
+  localStorage.removeItem('naver_client_id');
+  localStorage.removeItem('naver_client_secret');
+  toggleNaverKeyModal();
+}
+
+// ═══ Live News Search ═══
+function triggerLiveSearch(){
+  const id=localStorage.getItem('naver_client_id');
+  const secret=localStorage.getItem('naver_client_secret');
+  if(!id||!secret){toggleNaverKeyModal();return;}
+  fetchLiveNews(id,secret);
+}
+
+async function fetchLiveNews(clientId,clientSecret){
+  const overlay=document.getElementById('liveSearchOverlay');
+  const status=document.getElementById('liveSearchStatus');
+  const progress=document.getElementById('liveSearchProgress');
+  overlay.style.display='flex';
+  status.textContent='뉴스 검색 중...';
+
+  const subs=Object.keys(SEARCH_QUERIES);
+  const results=[];
+  const seenLinks=new Set();
+  let done=0;
+
+  // 4개씩 병렬 요청
+  for(let i=0;i<subs.length;i+=4){
+    const batch=subs.slice(i,i+4);
+    const promises=batch.map(sub=>{
+      const q=SEARCH_QUERIES[sub];
+      return fetch(`/api/news?query=${encodeURIComponent(q)}&display=5&sort=date`,{
+        headers:{'X-Naver-Client-Id':clientId,'X-Naver-Client-Secret':clientSecret}
+      }).then(r=>r.json()).then(data=>{
+        if(data.items){
+          data.items.forEach(item=>{
+            const link=item.originallink||item.link;
+            if(seenLinks.has(link))return;
+            seenLinks.add(link);
+            const title=clean(item.title);
+            const desc=clean(item.description);
+            const emoji=SUB_EMOJIS[sub]||'📰';
+            const region=detectRegion(title,desc,link);
+            const kws=extractKeywords(title,desc);
+            results.push({
+              sub,title:`${emoji} ${title}`,link,
+              desc:summary(desc),pubDate:new Date(item.pubDate).toISOString().split('T')[0],
+              kw:kws,r:region
+            });
+          });
+        }
+      }).catch(()=>{});
+    });
+    await Promise.all(promises);
+    done+=batch.length;
+    progress.textContent=`${done} / ${subs.length} 카테고리`;
+  }
+
+  if(results.length===0){
+    overlay.style.display='none';
+    alert('검색 결과가 없습니다. API 키를 확인하세요.');
+    return;
+  }
+
+  // allNews 갱신
+  allNews=results.map((n,i)=>{
+    const src=getSource(n.link);
+    return {...n,title:clean(n.title),source:src,perspective:getPersp(src),
+      region:n.r||'national',summary:summary(n.desc),dateObj:new Date(n.pubDate),
+      major:SUB_CATS[n.sub]?.major||'sustain',og:findOg(n.link),imp:3};
+  });
+
+  // 갱신 날짜 표시
+  document.getElementById('updateDate').textContent=`갱신: ${new Date().toISOString().split('T')[0]}`;
+  document.getElementById('totalCount').textContent=`전체 ${allNews.length}건`;
+
+  overlay.style.display='none';
+  render();
+  setTimeout(fetchAIInsight,300);
+}
+
+function extractKeywords(title,desc){
+  const text=title+' '+desc;
+  const candidates=['등록금','인상','사립대','법인전입금','적립금','부채','재정위기','교육비','1인당','교육비환원율','장학금','교원확보율','전임교원','충원율','중도탈락률','취업률','유학생','이사회','수익용기본재산','정보공시','교비횡령','비리','사립학교법','개정','학령인구','구조개혁','구조개선법','폐교','지방사립대','특성화','AI','디지털전환','비수도권','지역연계'];
+  return candidates.filter(kw=>text.includes(kw)).slice(0,4);
 }
 
 // ═══ AI Insight via Claude API ═══
