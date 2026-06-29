@@ -908,6 +908,7 @@ async function fetchLiveNews(clientId,clientSecret){
   const results=[];
   const seenLinks=new Set();
   let done=0;
+  let lastError='';
 
   // 4개씩 병렬 요청
   for(let i=0;i<subs.length;i+=4){
@@ -916,25 +917,28 @@ async function fetchLiveNews(clientId,clientSecret){
       const q=SEARCH_QUERIES[sub];
       return fetch(`/api/news?query=${encodeURIComponent(q)}&display=5&sort=date`,{
         headers:{'X-Naver-Client-Id':clientId,'X-Naver-Client-Secret':clientSecret}
-      }).then(r=>r.json()).then(data=>{
-        if(data.items){
-          data.items.forEach(item=>{
-            const link=item.originallink||item.link;
-            if(seenLinks.has(link))return;
-            seenLinks.add(link);
-            const title=clean(item.title);
-            const desc=clean(item.description);
-            const emoji=SUB_EMOJIS[sub]||'📰';
-            const region=detectRegion(title,desc,link);
-            const kws=extractKeywords(title,desc);
-            results.push({
-              sub,title:`${emoji} ${title}`,link,
-              desc:summary(desc),pubDate:new Date(item.pubDate).toISOString().split('T')[0],
-              kw:kws,r:region
-            });
+      }).then(r=>{
+        if(!r.ok) return r.text().then(t=>{lastError=`HTTP ${r.status}: ${t}`;return null;});
+        return r.json();
+      }).then(data=>{
+        if(!data||!data.items)return;
+        if(data.errorCode){lastError=`Naver API: ${data.errorMessage}`;return;}
+        data.items.forEach(item=>{
+          const link=item.originallink||item.link;
+          if(seenLinks.has(link))return;
+          seenLinks.add(link);
+          const title=clean(item.title);
+          const desc=clean(item.description);
+          const emoji=SUB_EMOJIS[sub]||'📰';
+          const region=detectRegion(title,desc,link);
+          const kws=extractKeywords(title,desc);
+          results.push({
+            sub,title:`${emoji} ${title}`,link,
+            desc:summary(desc),pubDate:new Date(item.pubDate).toISOString().split('T')[0],
+            kw:kws,r:region
           });
-        }
-      }).catch(()=>{});
+        });
+      }).catch(e=>{lastError=e.message;});
     });
     await Promise.all(promises);
     done+=batch.length;
@@ -943,7 +947,7 @@ async function fetchLiveNews(clientId,clientSecret){
 
   if(results.length===0){
     overlay.style.display='none';
-    alert('검색 결과가 없습니다. API 키를 확인하세요.');
+    alert('검색 결과가 없습니다.\n'+( lastError||'API 키를 확인하세요.'));
     return;
   }
 
