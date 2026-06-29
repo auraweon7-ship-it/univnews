@@ -178,6 +178,34 @@
     .news-grid{grid-template-columns:1fr;}
   }
   ::-webkit-scrollbar{width:8px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+  /* Light Mode */
+  body.light-mode{--bg:#f0f2f5;--card:#ffffff;--card-hover:#f8f9fa;--accent:#6c5ce7;--accent2:#7c6cf0;--text:#1a1a2e;--text-dim:#6b7280;--border:#e2e4e9;--tag-bg:#ede9fe;--tag-text:#6d28d9;--source-bg:#dbeafe;--source-text:#1e40af;}
+  body.light-mode .header{background:linear-gradient(135deg,#e8e0ff 0%,#f0f2f5 100%);}
+  body.light-mode .header h1{background:linear-gradient(135deg,#6c5ce7,#4a3ab5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  body.light-mode .controls{background:rgba(255,255,255,0.8);}
+
+  /* Theme Toggle */
+  .theme-toggle{background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.35rem 0.7rem;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;gap:0.3rem;transition:all 0.2s;}
+  .theme-toggle:hover{border-color:var(--accent);}
+
+  /* Bookmark */
+  .bookmark-btn{background:none;border:none;cursor:pointer;font-size:1rem;padding:0;margin-left:0.3rem;opacity:0.35;transition:opacity 0.2s,transform 0.15s;}
+  .bookmark-btn:hover{transform:scale(1.2);}
+  .bookmark-btn.bookmarked{opacity:1;color:#f59e0b;}
+  .bookmark-filter{display:flex;align-items:center;gap:0.4rem;}
+  .bookmark-filter .pill{font-size:0.8rem;}
+  .bookmark-count{font-size:0.7rem;background:var(--accent);color:#fff;border-radius:50%;padding:0.1rem 0.35rem;font-weight:700;margin-left:2px;}
+
+  /* Word Cloud clickable */
+  .wc-word{cursor:pointer!important;}
+  .wc-reset-btn{display:inline-block;margin-top:0.5rem;background:var(--accent);color:#fff;border:none;padding:0.25rem 0.7rem;border-radius:5px;font-size:0.75rem;font-weight:700;cursor:pointer;transition:opacity 0.2s;}
+  .wc-reset-btn:hover{opacity:0.8;}
+
+  /* Sentiment Gauge */
+  .sentiment-indicators{display:flex;justify-content:center;gap:1.2rem;margin-top:0.6rem;font-size:0.8rem;font-weight:700;}
+  .sentiment-indicators span{display:flex;align-items:center;gap:0.3rem;}
+  .sentiment-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
 </style>
 </head>
 <body>
@@ -191,6 +219,7 @@
     <div class="meta-info">
       <span id="updateDate">갱신: 2026-06-01</span>
       <span id="totalCount">전체 0건</span>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
       <button id="apiKeyBtn" onclick="toggleApiKeyModal()" style="background:var(--accent);border:none;color:#fff;padding:0.35rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.8rem;font-weight:700;display:flex;align-items:center;gap:0.3rem;">
         <span id="apiKeyIcon">🔑</span> <span id="apiKeyLabel">API 키 설정</span>
       </button>
@@ -247,6 +276,9 @@
     <label>검색</label>
     <input type="text" id="searchInput" class="ctrl-input search-input" placeholder="키워드 검색...">
   </div>
+  <div class="control-group bookmark-filter">
+    <button class="pill" id="bookmarkFilterBtn" onclick="toggleBookmarkFilter()">🔖 북마크 <span class="bookmark-count" id="bookmarkCount">0</span></button>
+  </div>
 </div>
 
 <!-- Perspective + Region Filters -->
@@ -287,6 +319,7 @@
     <div class="chart-card"><h3>📁 대유형별 분포</h3><canvas id="chartMajor"></canvas></div>
     <div class="chart-card"><h3>📰 언론사별 보도량</h3><canvas id="chartSource"></canvas></div>
     <div class="chart-card"><h3>📅 일별 뉴스 추이</h3><canvas id="chartTimeline"></canvas></div>
+    <div class="chart-card"><h3>😊 감성 분석 게이지</h3><canvas id="chartSentiment"></canvas><div class="sentiment-indicators" id="sentimentIndicators"></div></div>
   </div>
 </div>
 
@@ -694,6 +727,7 @@ function getFiltered(){
   let f=preFilter();
   if(activeMajor!=='all')f=f.filter(n=>n.major===activeMajor);
   if(activeSub!=='all')f=f.filter(n=>n.sub===activeSub);
+  if(showBookmarksOnly){const bm=getBookmarks();f=f.filter(n=>bm.includes(n.link));}
   const sort=document.getElementById('sortBy').value;
   f.sort((a,b)=>sort==='date-desc'?b.dateObj-a.dateObj:a.dateObj-b.dateObj);
   return f;
@@ -732,6 +766,7 @@ function renderNews(f){
           <span class="region-badge">${REGION_LABELS[n.region]||'전국'}</span>
         </div>
         <span class="importance">${'<span class="star-on">★</span>'.repeat(n.imp||3)+'<span class="star-off">★</span>'.repeat(5-(n.imp||3))}</span>
+        <button class="bookmark-btn ${isBookmarked(n.link)?'bookmarked':''}" onclick="event.stopPropagation();toggleBookmark('${n.link.replace(/'/g,"\\'")}')" title="북마크">${isBookmarked(n.link)?'🔖':'🔖'}</button>
         <span class="date">${d}</span>
       </div>
       <div class="title"><a href="${n.link}" target="_blank" rel="noopener">${n.title}</a></div>
@@ -766,7 +801,7 @@ document.getElementById('sortBy').addEventListener('change',render);
 document.getElementById('searchInput').addEventListener('input',render);
 
 // ═══ Charts ═══
-let chartMajorInst, chartSourceInst, chartTimelineInst;
+let chartMajorInst, chartSourceInst, chartTimelineInst, chartSentimentInst;
 const CHART_COLORS = ['#ef4444','#06b6d4','#10b981','#f59e0b','#8b5cf6'];
 const MAJOR_NAMES = ['재정 건전성','교육 투자','학생 경쟁력','법인 책무성','지속가능성'];
 const MAJOR_IDS = ['fiscal','invest','student','account','sustain'];
@@ -776,6 +811,7 @@ function renderCharts(f){
   renderMajorChart(f);
   renderSourceChart(f);
   renderTimelineChart(f);
+  renderSentimentGauge(f);
 }
 
 function renderWordCloud(f){
@@ -792,9 +828,11 @@ function renderWordCloud(f){
     const size=0.65+((c/max)*1.4);
     const color=colors[i%colors.length];
     const opacity=0.5+(c/max)*0.5;
-    return `<span class="wc-word" style="font-size:${size}rem;color:${color};opacity:${opacity}">${w}</span>`;
-  }).join('');
+    return `<span class="wc-word" title="${w}: ${c}회" onclick="applyWordCloudSearch('${w.replace(/'/g,"\\'")}')" style="font-size:${size}rem;color:${color};opacity:${opacity}">${w}</span>`;
+  }).join('')+'<br><button class="wc-reset-btn" onclick="clearWordCloudSearch()">↻ 검색 초기화</button>';
 }
+function applyWordCloudSearch(w){document.getElementById('searchInput').value=w;render();}
+function clearWordCloudSearch(){document.getElementById('searchInput').value='';render();}
 
 function renderMajorChart(f){
   const counts=MAJOR_IDS.map(id=>f.filter(n=>n.major===id).length);
@@ -1001,6 +1039,59 @@ async function fetchAIInsight(){
   }catch(e){
     document.getElementById('aiLoading').innerHTML='⚠️ AI 분석 로드 실패: '+e.message;
   }
+}
+
+// ═══ Theme Toggle ═══
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light-mode');
+  document.getElementById('themeToggle').textContent=isLight?'☀️':'🌙';
+  localStorage.setItem('theme_mode',isLight?'light':'dark');
+}
+(function initTheme(){
+  if(localStorage.getItem('theme_mode')==='light'){
+    document.body.classList.add('light-mode');
+    document.getElementById('themeToggle').textContent='☀️';
+  }
+})();
+
+// ═══ Bookmark ═══
+let showBookmarksOnly=false;
+function getBookmarks(){try{return JSON.parse(localStorage.getItem('news_bookmarks')||'[]');}catch(e){return[];}}
+function isBookmarked(link){return getBookmarks().includes(link);}
+function toggleBookmark(link){
+  let bm=getBookmarks();
+  if(bm.includes(link))bm=bm.filter(l=>l!==link);else bm.push(link);
+  localStorage.setItem('news_bookmarks',JSON.stringify(bm));
+  updateBookmarkCount();render();
+}
+function toggleBookmarkFilter(){
+  showBookmarksOnly=!showBookmarksOnly;
+  document.getElementById('bookmarkFilterBtn').classList.toggle('active',showBookmarksOnly);
+  render();
+}
+function updateBookmarkCount(){document.getElementById('bookmarkCount').textContent=getBookmarks().length;}
+updateBookmarkCount();
+
+// ═══ Sentiment Gauge ═══
+const SENT_POS=['성장','발전','지원','혁신','확대','증가','강화','성과','선정','투자','개선','우수','도약','상승'];
+const SENT_NEG=['위기','감소','폐교','비리','횡령','부채','적자','하락','축소','논란','갈등','반발','처벌','삭감'];
+function renderSentimentGauge(f){
+  let pos=0,neg=0,neu=0;
+  f.forEach(n=>{
+    const t=n.title;
+    const hasP=SENT_POS.some(k=>t.includes(k));
+    const hasN=SENT_NEG.some(k=>t.includes(k));
+    if(hasP&&!hasN)pos++;else if(hasN&&!hasP)neg++;else if(hasP&&hasN){pos+=0.5;neg+=0.5;}else neu++;
+  });
+  const total=pos+neg+neu||1;
+  const pP=Math.round(pos/total*100),pN=Math.round(neg/total*100),pNeu=100-pP-pN;
+  document.getElementById('sentimentIndicators').innerHTML=
+    `<span><span class="sentiment-dot" style="background:#10b981"></span>긍정 ${pP}%</span>`+
+    `<span><span class="sentiment-dot" style="background:#6b7280"></span>중립 ${pNeu}%</span>`+
+    `<span><span class="sentiment-dot" style="background:#ef4444"></span>부정 ${pN}%</span>`;
+  const ctx=document.getElementById('chartSentiment');
+  if(chartSentimentInst)chartSentimentInst.destroy();
+  chartSentimentInst=new Chart(ctx,{type:'doughnut',data:{labels:['긍정','중립','부정'],datasets:[{data:[pos,neu,neg],backgroundColor:['#10b981','#6b7280','#ef4444'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,rotation:-90,circumference:180,cutout:'70%',plugins:{legend:{display:false}}}});
 }
 
 // 기간 초기값: 실행하는 월의 1일~말일
