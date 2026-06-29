@@ -948,6 +948,16 @@ function extractKeywords(title,desc){
 }
 
 // ═══ AI Insight via Claude API ═══
+function highlightKeywords(text){
+  const kws=['등록금','법인전입금','학령인구','구조개혁','구조개선법','폐교','재정위기','교비횡령','비리','중도탈락','충원율','취업률','교원확보율','장학금','교육비환원율','적립금','부채','사립학교법','디지털전환','AI','유학생','수익용기본재산','정보공시','지방사립대','비수도권','재정지원','전입금','교육비','인상','위기','감소','개정','특성화'];
+  let html=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  const sorted=[...kws].sort((a,b)=>b.length-a.length);
+  sorted.forEach(kw=>{
+    html=html.replace(new RegExp(kw,'g'),`<span style="color:#ff4757;font-weight:700;">${kw}</span>`);
+  });
+  return html;
+}
+
 async function fetchAIInsight(){
   const apiKey=localStorage.getItem('claude_api_key');
   if(!apiKey){
@@ -989,7 +999,7 @@ async function fetchAIInsight(){
     const text=data.content?.[0]?.text||'분석 결과를 불러올 수 없습니다.';
     document.getElementById('aiLoading').style.display='none';
     document.getElementById('aiBody').style.display='block';
-    document.getElementById('aiBody').textContent=text;
+    document.getElementById('aiBody').innerHTML=highlightKeywords(text);
   }catch(e){
     document.getElementById('aiLoading').innerHTML='⚠️ AI 분석 로드 실패: '+e.message;
   }
